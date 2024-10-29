@@ -1,5 +1,6 @@
-# CST438Proj3-FrontEnd
-project 3 
+# idk
+A app for indecisive people
+CST438Proj3-FrontEnd
 
 # Welcome to your Expo app 👋
 
