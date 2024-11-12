@@ -7,10 +7,13 @@ import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient'; 
 import { useFonts } from 'expo-font';
+import { useNavigation } from 'expo-router';
+import { fakeuser } from '@/components/Types';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function HomeScreen() {
+  const navigator = useNavigation();
   // Load LexendDeca Font from Figma
   const [fontsLoaded] = useFonts({
     'LexendDeca': require('../assets/fonts/LexendDecaRegular.ttf'), 
@@ -30,17 +33,27 @@ export default function HomeScreen() {
   // I'm working on saving the user info with these two functions from the video I'm watching, its not done yet 
   async function handleSignInWithGoogle() {
     const user = await AsyncStorage.getItem("@user");
+    console.log(JSON.parse(user));
+    // if the user has never signed in
     if(!user)
     {
       if(response?.type === "success")
       {
         await getUserInfo(response.authentication?.accessToken);
+        // TODO: check with our database to see if this user already exists: if not, create username, else go to tabs
+        navigator.navigate('(tabs)');
       }
     }
     else
     {
       setUserInfo(JSON.parse(user));
+      navigator.navigate('(tabs)');
     }
+  }
+
+  const fakeSignIn = async () => {
+    await AsyncStorage.setItem("@user", JSON.stringify(fakeuser));
+    await handleSignInWithGoogle();
   }
 
   const getUserInfo = async (token: string | undefined) => {
@@ -52,7 +65,8 @@ export default function HomeScreen() {
           headers: {Authorization: `Bearer ${token}`},
         }
       );
-      const user = await response.json();
+      let user = await response.json();
+      user.username = 'none';
       await AsyncStorage.setItem("@user", JSON.stringify(user));
       setUserInfo(user);
     } catch(error){
@@ -105,7 +119,7 @@ export default function HomeScreen() {
             source={require('../assets/images/googlelogo.png')} 
             style={styles.googleLogo}
           />
-          <Text style={styles.googleButtonText}>Sign in with Google</Text>
+          <Text style={styles.googleButtonText}>Sign in</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -142,14 +156,23 @@ export default function HomeScreen() {
         colors={['#C2066D', '#541388']}  
         style={styles.gradientBackground}>
         <View style={styles.textRow}>
-        <Text>{JSON.stringify(userInfo, null, 2)}</Text>
         <Text style={styles.title}>idk</Text>
         <Animated.Text style={[styles.flashingText, { opacity: flashingTextOpacity }]}>
           |
         </Animated.Text>
       </View>
-  {/* Google Button */}
+        {/* Google Button */}
         {Component}
+        {/* Fake User Sign in for dev purposes */}
+        <View>
+          <TouchableOpacity
+            style={styles.googleButton}
+            onPress={() => fakeSignIn()}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.googleButtonText}>Debug Sign in</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
     </SafeAreaView>
   );
