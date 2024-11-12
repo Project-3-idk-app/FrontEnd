@@ -49,9 +49,10 @@ export default function UserScreen() {
     }, []);
     return (
         <ThemedView style={styles.fullPage}>
-            <SafeAreaView>
-                <ThemedView style={styles.titleContainer}>
+            <View style={{ backgroundColor: "#CB046B", flex: 1, height: 10}}>
                     <ThemedText type="title">Welcome, your already signed in.</ThemedText>
+            </View>
+                <ThemedView style={styles.titleContainer}>
                 </ThemedView>
                 <ThemedView style={styles.body}>
                     <ThemedText type="subtitle">Hello User: {user.username}</ThemedText>
@@ -63,9 +64,7 @@ export default function UserScreen() {
                         </View>
                         <View style={{ display: 'flex', flex: 1, margin: 10}}/>
                     </View>
-
                 </ThemedView>
-            </SafeAreaView>
         </ThemedView>
     );
 }

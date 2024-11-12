@@ -17,7 +17,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="home"
                 options={{
-                    title: 'Home',
+                    title: '',
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
                     ),
@@ -26,7 +26,10 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="user"
                 options={{
-                    title: 'User',
+                    title: '',
+                    headerTitle: '',
+                    tabBarLabel: '',
+                    
                     tabBarIcon: ({ color, focused }) => (
                         <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
                     ),
