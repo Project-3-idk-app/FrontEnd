@@ -22,20 +22,47 @@ export default function HomeScreen() {
   // Request for Google Auth
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: '500822752579-mauavq9gc7vc5lsj0or9iusau4nselej.apps.googleusercontent.com',
+    androidClientId: '500822752579-8u7s381ejd5l148t79v8od1jepd4jbn8.apps.googleusercontent.com',
+    iosClientId: '',
     scopes: ['profile', 'email'],
   });
 
-  React.useEffect(() => {
-    if (response?.type === 'success') 
+  // I'm working on saving the user info with these two functions from the video I'm watching, its not done yet 
+  async function handleSignInWithGoogle() {
+    const user = await AsyncStorage.getItem("@user");
+    if(!user)
     {
-      const { authentication } = response;
-      console.log('Authentication successful', authentication);
-      // save user info 
-    } 
-    else if (response?.type === 'error') 
-    {
-      console.log('Authentication error', response);
+      if(response?.type === "success")
+      {
+        await getUserInfo(response.authentication?.accessToken);
+      }
     }
+    else
+    {
+      setUserInfo(JSON.parse(user));
+    }
+  }
+
+  const getUserInfo = async (token: string | undefined) => {
+    if(!token) return;
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: {Authorization: `Bearer ${token}`},
+        }
+      );
+      const user = await response.json();
+      await AsyncStorage.setItem("@user", JSON.stringify(user));
+      setUserInfo(user);
+    } catch(error){
+      // error handler
+    }
+  };
+
+  // Use Handle Sign In With Google Function and get user info
+  React.useEffect(() => {
+    handleSignInWithGoogle();
   }, [response]);
 
   // Flashing Text Function for idk Bar in Logo 
@@ -71,12 +98,18 @@ export default function HomeScreen() {
           } else {
             console.log('Google Auth request is not ready');
           }
-        }}
-      >
-        <Text style={styles.googleButtonText}>Sign in with Google</Text>
+        }}>
+        <View style={styles.buttonContent}>
+          {/* Google Logo */}
+          <Image
+            source={require('../assets/images/googlelogo.png')} 
+            style={styles.googleLogo}
+          />
+          <Text style={styles.googleButtonText}>Sign in with Google</Text>
+        </View>
       </TouchableOpacity>
     </View>
-    ),
+),
     // On Web, display the Google button
     default: () => (
       <View style={styles.container}>
@@ -109,12 +142,13 @@ export default function HomeScreen() {
         colors={['#C2066D', '#541388']}  
         style={styles.gradientBackground}>
         <View style={styles.textRow}>
+        <Text>{JSON.stringify(userInfo, null, 2)}</Text>
         <Text style={styles.title}>idk</Text>
         <Animated.Text style={[styles.flashingText, { opacity: flashingTextOpacity }]}>
           |
         </Animated.Text>
       </View>
-    {/* Google Button */}
+  {/* Google Button */}
         {Component}
       </LinearGradient>
     </SafeAreaView>
@@ -149,7 +183,6 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     fontWeight: '400',
     fontSize: 120,
-    lineHeight: 40, 
     color: '#FFFFFF',
     marginTop: 170,
     textShadowColor: 'rgba(0, 0, 0, 0.25)',  
