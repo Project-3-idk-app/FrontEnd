@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Dimensions, Platform, Animated } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Dimensions, Platform, Animated, Image } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -45,7 +45,7 @@ export default function FeedScreen() {
         <View style={styles.fullPage}>
             <View style={styles.rectangle13}>
                 <TouchableOpacity onPress={clearPoll}>
-                        <img src='assets/images/close_ring.png' style={styles.crossIcon}></img>
+                        <Image source={require('@/assets/images/close_ring.png')} style={styles.crossIcon}></Image>
                     </TouchableOpacity>
                 <View style={styles.group1}>
                     <View style={styles.inputContainer}>
@@ -54,7 +54,9 @@ export default function FeedScreen() {
                             placeholder="Ask a question ..."
                             placeholderTextColor="#FFFFFF"
                             value={question}
-                            onChangeText={setQuestion}/>
+                            onChangeText={setQuestion}
+                            multiline={true}
+                            maxLength={32}/>
                     </View>
                 
                     <View style={styles.choicesContainer}>
@@ -66,20 +68,21 @@ export default function FeedScreen() {
                                 placeholderTextColor="#F1E9DA"
                                 value={choice}
                                 onChangeText={(text) => updateChoice(index, text)} // Update specific choice
+                                maxLength={32}
                             />
                         ))}
                     </View>
 
                     {choices.length < 4 && (
                         <TouchableOpacity style={styles.addOptionContainer} onPress={addChoice}>
-                            <img src='assets/images/Chat_plus.png' style={styles.icon} />
+                            <Image source={require('@/assets/images/Chat_plus.png')} style={styles.icon}></Image>
                             <Text style={styles.addAnotherOption}>Add Another Option</Text>
                         </TouchableOpacity>
                     )}
 
                     {choices.length > 2 && (
                         <TouchableOpacity style={styles.removeOptionContainer} onPress={(removeChoice)}>
-                            <img src='assets/images/Dell_light.png' style={styles.icon} />
+                            <Image source={require('@/assets/images/Dell_light.png')} style={styles.icon}></Image>
                             <Text style={styles.addAnotherOption}>Remove Option</Text>
                         </TouchableOpacity>
                     )}
@@ -193,7 +196,7 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
         marginVertical: 10,
-        top:45, 
+        top:30, 
     },
     createPollButton: {
         width: Math.min(windowWidth * 0.6, 209.25),
