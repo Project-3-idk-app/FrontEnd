@@ -28,6 +28,13 @@ export type Poll = {
     options: Option[];
 };
 
+//Type definition for friend 
+export type Friend = {
+    friendId: number;
+    friendUsername: string; 
+    friendStatus: string; 
+}
+
 
 // Fake Infromation For Users and Polls
 export const fakeuser: User = {

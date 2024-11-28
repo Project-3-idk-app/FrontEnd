@@ -63,7 +63,6 @@ export default function UserScreen() {
     }
     return (
         <ThemedView style={styles.fullPage}>
-            
             <View style={styles.topTab}>
                 <View style={{flex: 1}}/>
                 <View style={styles.userInfo}>

@@ -1,45 +1,126 @@
-import { StyleSheet } from 'react-native';
+import { Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react'
+import { useNavigation } from 'expo-router';
+import {fakeuser } from '@/components/Types';
+import { useFonts } from 'expo-font';
+import FriendComponent from '@/components/Friend';
 
 export default function FeedScreen() {
+    const navigator = useNavigation();
+    const [user, setUser] = useState(fakeuser);
+    const [friends, setFriends] = useState([]);
+    
+    const [fontsLoaded] = useFonts({
+        'LexendDeca': require('@/assets/fonts/LexendDecaRegular.ttf'), 
+      });
+
+const getUserFromStorage = async () => {
+    try {
+        const user = await AsyncStorage.getItem("@user");
+        if (user) {
+            console.log("User found:", JSON.parse(user));
+            return JSON.parse(user);
+        } else {
+            console.log("No user found in AsyncStorage.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error getting user from AsyncStorage", error);
+        return null; 
+    }
+};
+
+useEffect(() => {
+    const fetchUser = async () => {
+        const user = await getUserFromStorage();
+        if (user) {
+            setUser(user);
+            setFriends([
+                { id: 1, username: 'JustNekoChris' },
+                { id: 2, username: 'DaSpeedSta' },
+                { id: 3, username: 'HappyFunBuns' },
+            ]);
+        }
+    };
+
+    fetchUser();
+    console.log(JSON.stringify(user, null, 2));
+}, []);
+
+const handleUnfollow = (friendId) => {
+    alert(`Unfollowing friend with ID:', ${friendId}`);
+};
+
     return (
+        <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.fullPage}>
-            <SafeAreaView>
-                <ThemedView style={styles.titleContainer}>
-                    <ThemedText type="title">Friends Tab!</ThemedText>
-                </ThemedView>
-                <ThemedView style={styles.body}>
-                    <ThemedText type="subtitle">List of User's Friends</ThemedText>
-                </ThemedView>
-            </SafeAreaView>
+            <View style={styles.topTab}>
+                <View style={{flex: 1}}/>
+                <View style={styles.userInfo}>
+                    <ThemedText style={styles.userInfo} type="title">{user.username}'s Friends</ThemedText>
+                </View>
+                <View style={{ flex: 1, alignContent: 'flex-end', alignItems: 'flex-start', flexWrap: 'wrap'}}/>
+            </View>
+            
+            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
+                {friends.map((friend) => (
+                    <FriendComponent
+                        key={friend.id}
+                        friend={friend}
+                        onUnfollow={handleUnfollow}
+                    />
+                ))}
+            </ScrollView>
         </ThemedView>
+    </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+    },
     fullPage: {
-        flex: 1
+        flex: 1,
     },
-    content: {
-
-    },
-    titleContainer: {
+    topTab: {
+        backgroundColor: "#541388",
+        paddingTop: (StatusBar.currentHeight || 0) + 5,
         flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
-        gap: 8,
+        paddingBottom: 12,
+        marginBottom: 20,
+        borderBottomRightRadius: 20,
+        borderBottomLeftRadius: 20,
     },
-    body: {
-        gap: 8,
-        marginBottom: 8,
+    scrollView: {
+        flex: 1,
     },
-    reactLogo: {
-        height: 178,
-        width: 290,
-        bottom: 0,
-        left: 0,
-        position: 'absolute',
+    scrollViewContent: {
+        paddingHorizontal: 16,
+        paddingBottom: 20,
+    },
+    userInfo: {
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
+        fontWeight: '400',
+        color: '#FFFFFF',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 5,
+    },
+    image: {
+        width: Platform.OS === "web" ? 100 : 50, 
+        height: Platform.OS === "web" ? 100 : 50,
+    },
+    setting: {
+        width: Platform.OS === "web" ? 50 : 25,
+        height: Platform.OS === "web" ? 50 : 25,
     },
 });
