@@ -7,7 +7,7 @@ import IdkLogo from '@/components/Logo';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fakeuser } from '@/components/Types';
-import { createUser } from '@/components/DataBaseFuncs';
+import { createUser, searchUsersBool } from '@/components/DataBaseFuncs';
 import { useNavigation } from 'expo-router';
 
 export default function SingUpScreen() {
@@ -32,14 +32,20 @@ export default function SingUpScreen() {
     // TODO check if user name has already been taken, for now its going to work either way.
     user.username = username;
     console.log(`user is `, user);
-    let temp = await createUser(user);
-    console.log(temp);
-    if(temp != null){
-      await AsyncStorage.setItem("@user", JSON.stringify(user));
-      navigator.navigate('(tabs)');
+    let result = await searchUsersBool(username);
+    if(result){
+      let temp = await createUser(user);
+      console.log(temp);
+      if (temp != null) {
+        await AsyncStorage.setItem("@user", JSON.stringify(user));
+        navigator.navigate('(tabs)');
+      }
+      else{
+        alert("Error with Account Creation, please try again");
+      }
     }
     else {
-      alert("Error With Username");
+      alert("Error With Username, use a different username");
     }
   };
 

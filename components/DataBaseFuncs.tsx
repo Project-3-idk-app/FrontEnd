@@ -55,3 +55,29 @@ export const createUser = async (user: User) => {
         return null;
     }
 };
+
+export const searchUsersBool = async (user: string) => {
+    // TODO this isnt working
+    console.log("user to be searched", user);
+    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/searchusers/${user}/`;
+    // const url = `http://127.0.0.1:8000/create/user/`;
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data: User = await response.json();
+        console.log(data);
+        if(data.username == user){
+            console.log("Error: duplicate username");
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error('Error:', error);
+        return false;
+    }
+};
