@@ -13,7 +13,6 @@ const windowHeight = Dimensions.get('window').height;
 export default function FeedScreen() {
     const [question, setQuestion] = useState(''); 
     const [choices, setChoices] = useState(['','']);
-
     const addChoice = () => {
         if(choices.length < 4){
             setChoices([...choices, '']); 

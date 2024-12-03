@@ -13,7 +13,6 @@ export default function FeedScreen() {
     const navigator = useNavigation();
     const [user, setUser] = useState(fakeuser);
     const [friends, setFriends] = useState([]);
-    
     const [fontsLoaded] = useFonts({
         'LexendDeca': require('@/assets/fonts/LexendDecaRegular.ttf'), 
       });
@@ -55,6 +54,11 @@ const handleUnfollow = (friendId) => {
     alert(`Unfollowing friend with ID:', ${friendId}`);
 };
 
+const handleAddFriend = () => {
+    // Add friend functionality here
+    navigator.navigate('addFriend');
+};
+
     return (
         <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.fullPage}>
@@ -63,8 +67,17 @@ const handleUnfollow = (friendId) => {
                 <View style={styles.userInfo}>
                     <ThemedText style={styles.userInfo} type="title">{user.username}'s Friends</ThemedText>
                 </View>
+                
                 <View style={{ flex: 1, alignContent: 'flex-end', alignItems: 'flex-start', flexWrap: 'wrap'}}/>
             </View>
+            <View style={styles.addButtonContainer}>
+                        <Pressable
+                            style={styles.addButton}
+                            onPress={handleAddFriend}
+                        >
+                            <Text style={styles.addButtonText}>+ Add Friend</Text>
+                        </Pressable>
+                    </View>
             
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
                 {friends.map((friend) => (
@@ -122,5 +135,20 @@ const styles = StyleSheet.create({
     setting: {
         width: Platform.OS === "web" ? 50 : 25,
         height: Platform.OS === "web" ? 50 : 25,
+    },
+    addButtonContainer: {
+        alignItems: 'flex-end',
+    },
+    addButton: {
+        backgroundColor: '#FF0A78',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        marginRight: 8,
+    },
+    addButtonText: {
+        color: '#FFFFFF',
+        fontFamily: 'LexendDeca',
+        fontSize: 14,
     },
 });

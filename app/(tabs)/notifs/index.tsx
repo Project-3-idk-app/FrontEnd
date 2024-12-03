@@ -75,16 +75,12 @@ export default function FeedScreen() {
     };
 
     const fetchFriendRequests = async (userId) => {
-        // Simulating API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
         setFriendRequests(fakeFriendRequests);
         setLoading(false);
     };
 
     const handleAcceptRequest = async (friendId) => {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Remove the accepted request from the list
         setFriendRequests(prev => 
             prev.filter(request => request.userId !== friendId)
