@@ -2,6 +2,10 @@ import { User } from "./Types";
 
 // Returns user information or null
 export const getUserInfoDb = async (userId : number) => {
+    if(typeof(userId) == "undefined"){
+        console.log('user id was undefined');
+        return null;
+    }
     const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/user/${userId}/`;
     console.log("url is ", url)
     try {
@@ -12,9 +16,13 @@ export const getUserInfoDb = async (userId : number) => {
             },
         });
 
-        const data : User = await response.json();
+        const data = await response.json();
+        if(data.error){
+            console.log('user not found');
+            return null;
+        }
         console.log("data within the db func is ", data);
-        return data;
+        return data as User;
     } catch (error) {
         console.error('Error:', error);
     }
@@ -24,6 +32,7 @@ export const getUserInfoDb = async (userId : number) => {
 export const createUser = async (user: User) => {
     console.log("user to be made in the system", user);
     const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/create/user/`;
+    // const url = `http://127.0.0.1:8000/create/user/`;
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -43,7 +52,6 @@ export const createUser = async (user: User) => {
         return data;
     } catch (error) {
         console.error('Error:', error);
+        return null;
     }
-    return null;
 };
-    

@@ -21,9 +21,6 @@ export default function HomeScreen() {
     'LexendDeca': require('../assets/fonts/LexendDecaRegular.ttf'), 
   });
 
-  //Initialize User Info Variables 
-  const [userInfo, setUserInfo] = React.useState(null);
-
   // Request for Google Auth
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: '500822752579-mauavq9gc7vc5lsj0or9iusau4nselej.apps.googleusercontent.com',
@@ -35,25 +32,25 @@ export default function HomeScreen() {
   // I'm working on saving the user info with these two functions from the video I'm watching, its not done yet 
   async function handleSignInWithGoogle() {
     let user = await AsyncStorage.getItem("@user");
-    console.log(JSON.parse(user));
-    // if the user has never signed in
+    console.log("local storage currently has: ", JSON.parse(user));
+    // if the user hasnt signed in
     if(!user)
     {
       if(response?.type === "success")
       {
-        console.log("in success if statement");
         await getGoogleInfo(response.authentication?.accessToken);
         user = await AsyncStorage.getItem("@user");
-        console.log("Post getGoogleInfo");
-        //TODO, the user id is undefined somehow gotta fix that
-        console.log('user info for the redirect is ', userInfo);
+        user = JSON.parse(user);
+        console.log('user info for checking the database is ', user);
         let check = await getUserInfoDb(user.id);
         console.log("user info is", check)
         if(check == null) {
-          navigator.navigate('signup' );
+          // user doesnt exist in our db
+          navigator.navigate('signup');
         }
         else {
-          //user exists
+          // user exists
+          await AsyncStorage.setItem("@user", JSON.stringify(check));
           navigator.navigate('(tabs)')
         }
 
@@ -61,7 +58,7 @@ export default function HomeScreen() {
     }
     else
     {
-      setUserInfo(JSON.parse(user));
+      // if the user has signed in
       navigator.navigate('(tabs)');
     }
   }
@@ -86,7 +83,6 @@ export default function HomeScreen() {
       console.log("post json change")
       user.username = 'none';
       await AsyncStorage.setItem("@user", JSON.stringify(user));
-      setUserInfo(user);
     } catch(error){
       // error handler
     }

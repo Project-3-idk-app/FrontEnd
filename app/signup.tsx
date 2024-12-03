@@ -14,32 +14,18 @@ export default function SingUpScreen() {
   const [username, setUsername] = useState(''); // State for the TextInput value
   const [user, setUser] = useState(fakeuser);
   const navigator = useNavigation();
-  const getUserFromStorage = async () => {
-    try {
-      const user = await AsyncStorage.getItem("@user");
-      if (user) {
-        console.log("User locally saved:", JSON.parse(user));
-        return JSON.parse(user);
-      } else {
-        console.log("No user found in AsyncStorage.");
-        return null;
-      }
-    } catch (error) {
-      console.error("Error getting user from AsyncStorage", error);
-      return null;
-    }
-  };
+
+
   // When screen is focused on, get User information
   useEffect(() => {
     const fetchUser = async () => {
-      const user = await getUserFromStorage();
-      if (user) {
-        setUser(user);
+      const temp = await AsyncStorage.getItem("@user");
+      if (temp) {
+        setUser(JSON.parse(temp));
+        console.log("local user is: ", user);
       }
     };
-
     fetchUser();
-    console.log(JSON.stringify(user, null, 2));
   }, []);
 
   const usernameCheck = async () => {
@@ -48,7 +34,8 @@ export default function SingUpScreen() {
     console.log(`user is `, user);
     let temp = await createUser(user);
     console.log(temp);
-    if(temp){
+    if(temp != null){
+      await AsyncStorage.setItem("@user", JSON.stringify(user));
       navigator.navigate('(tabs)');
     }
     else {
