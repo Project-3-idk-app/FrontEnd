@@ -41,14 +41,16 @@ export default function HomeScreen() {
     {
       if(response?.type === "success")
       {
+        console.log("in success if statement");
         await getGoogleInfo(response.authentication?.accessToken);
         user = await AsyncStorage.getItem("@user");
+        console.log("Post getGoogleInfo");
         //TODO, the user id is undefined somehow gotta fix that
+        console.log('user info for the redirect is ', userInfo);
         let check = await getUserInfoDb(user.id);
         console.log("user info is", check)
         if(check == null) {
-          // user doesnt exist in db yet
-          // page to make username
+          navigator.navigate('signup' );
         }
         else {
           //user exists
@@ -71,6 +73,7 @@ export default function HomeScreen() {
 
   const getGoogleInfo = async (token: string | undefined) => {
     if(!token) return;
+    console.log("attempting to fetch");
     try {
       const response = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
@@ -78,7 +81,9 @@ export default function HomeScreen() {
           headers: {Authorization: `Bearer ${token}`},
         }
       );
+      console.log("post fetch");
       let user = await response.json();
+      console.log("post json change")
       user.username = 'none';
       await AsyncStorage.setItem("@user", JSON.stringify(user));
       setUserInfo(user);

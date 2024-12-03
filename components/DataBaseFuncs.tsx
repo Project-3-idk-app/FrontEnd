@@ -22,6 +22,7 @@ export const getUserInfoDb = async (userId : number) => {
 };
 
 export const createUser = async (user: User) => {
+    console.log("user to be made in the system", user);
     const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/create/user/`;
     try {
         const response = await fetch(url, {
