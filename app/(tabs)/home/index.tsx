@@ -1,19 +1,20 @@
-import { StyleSheet } from 'react-native';
+import { Animated, StatusBar, StyleSheet, View, Text } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React from 'react'
+import IdkLogo from '@/components/Logo';
 
 export default function FeedScreen() {
     return (
         <ThemedView style={styles.fullPage}>
             <SafeAreaView>
-                <ThemedView style={styles.titleContainer}>
-                    <ThemedText type="title">Welcome!</ThemedText>
-                </ThemedView>
-                <ThemedView style={styles.body}>
-                    <ThemedText type="subtitle">Right around here would be where the feed would be</ThemedText>
-                </ThemedView>
+            <View style={styles.topTab}>
+                <View style={{flex: 1}}/>
+                <IdkLogo fontSize={50}></IdkLogo>
+                <View style={{ flex: 1, alignContent: 'flex-end', alignItems: 'flex-start'}}>
+                </View>
+            </View>
             </SafeAreaView>
         </ThemedView>
     );
@@ -23,9 +24,7 @@ const styles = StyleSheet.create({
     fullPage: {
         flex: 1
     },
-    content: {
 
-    },
     titleContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -35,11 +34,14 @@ const styles = StyleSheet.create({
         gap: 8,
         marginBottom: 8,
     },
-    reactLogo: {
-        height: 178,
-        width: 290,
-        bottom: 0,
-        left: 0,
-        position: 'absolute',
+      
+    topTab: {
+        backgroundColor: "#CB046B",
+        paddingTop: (StatusBar.currentHeight || 0),
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderBottomRightRadius: 20,
+        borderBottomLeftRadius: 20,
     },
 });

@@ -1,6 +1,10 @@
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Dimensions, Platform, Animated, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Dimensions, Platform, Image, StatusBar } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import user from '../user';
 
 // Get screen dimensions
 const windowWidth = Dimensions.get('window').width;
@@ -17,11 +21,6 @@ export default function FeedScreen() {
     }
 
     const clearPoll = () => {
-        if(choices.length > 2)
-        {
-            const updatedChoices = choices.slice(0, 2);
-            setChoices(updatedChoices);
-        }
         setQuestion(''); 
         setChoices(['', '']); 
     }
@@ -31,76 +30,102 @@ export default function FeedScreen() {
         updatedChoices[index] = value;
         setChoices(updatedChoices); 
     }
-    const removeChoice = () => {
-        // remove the last choice
-        const updatedChoices = choices.slice(0, choices.length - 1);
-        setChoices(updatedChoices);
+
+    const removeChoice = (indexToRemove) => {
+        if (choices.length > 2) {
+            const updatedChoices = choices.filter((_, index) => index !== indexToRemove);
+            setChoices(updatedChoices);
+        }
     };
+
     const submitPoll = () => {
+        for(let i = 0; i < choices.length; i++)
+        {
+            if(choices[i] == '' || question == '')
+            {
+                alert("Error: Cannot have an empty question or choice.")
+                return;
+            }
+        }
+        alert("Poll Created!");
         console.log("Question:", question);
         console.log("Choices:", choices);
     }; 
 
     return (
-        <View style={styles.fullPage}>
-            <View style={styles.rectangle13}>
-                <TouchableOpacity onPress={clearPoll}>
+        <SafeAreaView style={styles.container}>
+            <ThemedView style={styles.fullPage}>
+                <View style={styles.topTab}>
+                    <View style={{flex: 1}}/>
+                    <View style={styles.tabText}>
+                        <ThemedText style={styles.tabText} type="title">Create a Poll</ThemedText>
+                    </View>
+                    <View style={{ flex: 1, alignContent: 'flex-end', alignItems: 'flex-start', flexWrap: 'wrap'}}>
+                    </View>
+                </View>
+                <View style={styles.rectangle13}>
+                    <TouchableOpacity onPress={clearPoll}>
                         <Image source={require('@/assets/images/close_ring.png')} style={styles.crossIcon}></Image>
                     </TouchableOpacity>
-                <View style={styles.group1}>
-                    <View style={styles.inputContainer}>
-                        <TextInput
-                            style={styles.askQuestion}
-                            placeholder="Ask a question ..."
-                            placeholderTextColor="#FFFFFF"
-                            value={question}
-                            onChangeText={setQuestion}
-                            multiline={true}
-                            maxLength={32}/>
-                    </View>
-                
-                    <View style={styles.choicesContainer}>
-                        {choices.map((choice, index) => (
+                    <View style={styles.group1}>
+                        <View style={styles.inputContainer}>
                             <TextInput
-                                key={index}
-                                style={styles.choice}
-                                placeholder={`Choice ${index + 1} ...`}
-                                placeholderTextColor="#F1E9DA"
-                                value={choice}
-                                onChangeText={(text) => updateChoice(index, text)} // Update specific choice
-                                maxLength={32}
-                            />
-                        ))}
+                                style={styles.askQuestion}
+                                placeholder="Ask a question ..."
+                                placeholderTextColor="#FFFFFF"
+                                value={question}
+                                onChangeText={setQuestion}
+                                multiline={true}
+                                maxLength={32}/>
+                        </View>
+                    
+                        <View style={styles.choicesContainer}>
+                            {choices.map((choice, index) => (
+                                <View key={index} style={styles.choiceContainer}>
+                                    <TextInput
+                                        style={[styles.choice, { flex: 1 }]}
+                                        placeholder={`Choice ${index + 1} ...`}
+                                        placeholderTextColor="#F1E9DA"
+                                        value={choice}
+                                        onChangeText={(text) => updateChoice(index, text)}
+                                        maxLength={32}
+                                    />
+                                    {choices.length > 2 && (
+                                        <TouchableOpacity 
+                                            style={styles.removeChoiceButton}
+                                            onPress={() => removeChoice(index)}
+                                        >
+                                            <Image 
+                                                source={require('@/assets/images/close_ring.png')} 
+                                                style={styles.removeChoiceIcon}
+                                            />
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            ))}
+                        </View>
+
+                        {choices.length < 4 && (
+                            <TouchableOpacity style={styles.addOptionContainer} onPress={addChoice}>
+                                <Image source={require('@/assets/images/Chat_plus.png')} style={styles.icon}></Image>
+                                <Text style={styles.addAnotherOption}>Add Another Option</Text>
+                            </TouchableOpacity>
+                        )}
+
+                        <Text style={styles.expires}>Expires in 24 hours</Text>
                     </View>
-
-                    {choices.length < 4 && (
-                        <TouchableOpacity style={styles.addOptionContainer} onPress={addChoice}>
-                            <Image source={require('@/assets/images/Chat_plus.png')} style={styles.icon}></Image>
-                            <Text style={styles.addAnotherOption}>Add Another Option</Text>
-                        </TouchableOpacity>
-                    )}
-
-                    {choices.length > 2 && (
-                        <TouchableOpacity style={styles.removeOptionContainer} onPress={(removeChoice)}>
-                            <Image source={require('@/assets/images/Dell_light.png')} style={styles.icon}></Image>
-                            <Text style={styles.addAnotherOption}>Remove Option</Text>
-                        </TouchableOpacity>
-                    )}
-
-                    <Text style={styles.expires}>Expires in 24 hours</Text>
-        
                 </View>
-            </View>
-            <TouchableOpacity style={styles.createPollButton} onPress={submitPoll}>
-                <LinearGradient
-                    colors={['#541388', '#D90368']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.createPollButton}>
-                    <Text style={styles.createPollText}>Create Poll</Text>
-                </LinearGradient>
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity style={styles.createPollButton} onPress={submitPoll}>
+                    <LinearGradient
+                        colors={['#541388', '#D90368']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.createPollButton}>
+                        <Text style={styles.createPollText}>Create Poll</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+            </ThemedView>
+        </SafeAreaView>
     );
 }
 
@@ -109,10 +134,30 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F1E9DA',
     },
+    topTab: {
+        width: '100%',
+        backgroundColor: "#CB046B",
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 12,
+        marginBottom: 45,
+        borderBottomRightRadius: 20,
+        borderBottomLeftRadius: 20,
+    },
+    tabText: {
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
+        fontWeight: '400',
+        color: '#FFFFFF',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 10,
+    },
     fullPage: {
         flex: 1,
         backgroundColor: '#F1E9DA',
-        justifyContent: 'center',
         alignItems: 'center',
     },
     rectangle13: {
@@ -141,7 +186,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 20,
     },
-    crossIcon:{
+    crossIcon: {
         width: 25,
         height: 25,
     },
@@ -165,8 +210,13 @@ const styles = StyleSheet.create({
         gap: 10,
         marginBottom: 20,
     },
-    choice: {
+    choiceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 5,
         width: '100%',
+    },
+    choice: {
         minHeight: 40,
         backgroundColor: '#BB146A',
         borderRadius: 5,
@@ -174,16 +224,19 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#F1E9DA',
         textAlign: 'center',
-        marginVertical: 5,
+    },
+    removeChoiceButton: {
+        marginLeft: 10,
+        padding: 5,
+    },
+    removeChoiceIcon: {
+        width: 20,
+        height: 20,
     },
     addOptionContainer: {
         flexDirection: 'row', 
         alignItems: 'center', 
         marginVertical: 10,
-    },
-    removeOptionContainer: {
-        flexDirection: 'row', 
-        alignItems: 'center', 
     },
     addAnotherOption: {
         fontSize: 14,
@@ -196,7 +249,7 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
         marginVertical: 10,
-        top:30, 
+        top: 30, 
     },
     createPollButton: {
         width: Math.min(windowWidth * 0.6, 209.25),
@@ -211,24 +264,9 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         textAlign: 'center',
     },
-    group7: {
-        width: '100%',
-        height: 60,
-        backgroundColor: '#000000',
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-    },
-    frame3: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 35,
-        paddingVertical: 8,
-    },
     icon: {
         width: 16,
         height: 16,
-        marginRight:5,
+        marginRight: 5,
     },
 });

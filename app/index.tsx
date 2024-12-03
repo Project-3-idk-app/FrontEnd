@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import { useNavigation } from 'expo-router';
 import { fakeuser } from '@/components/Types';
+import IdkLogo from '@/components/Logo';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -79,25 +80,6 @@ export default function HomeScreen() {
     handleSignInWithGoogle();
   }, [response]);
 
-  // Flashing Text Function for idk Bar in Logo 
-  const flashingTextOpacity = React.useRef(new Animated.Value(2)).current; 
-  React.useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(flashingTextOpacity, 
-        {
-          toValue: 0, // fade out
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(flashingTextOpacity, {
-          toValue: 1, // fade in
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-  }, [flashingTextOpacity]);
 
   // Display Buttons Based on Platform 
   const Component = Platform.select({
@@ -156,10 +138,7 @@ export default function HomeScreen() {
         colors={['#C2066D', '#541388']}  
         style={styles.gradientBackground}>
         <View style={styles.textRow}>
-        <Text style={styles.title}>idk</Text>
-        <Animated.Text style={[styles.flashingText, { opacity: flashingTextOpacity }]}>
-          |
-        </Animated.Text>
+        <IdkLogo fontSize={120}></IdkLogo>
       </View>
         {/* Google Button */}
         {Component}
@@ -190,17 +169,11 @@ const styles = StyleSheet.create({
   },
   textRow: {
     flexDirection: 'row',  
-    alignItems: 'center',   
+    alignItems: 'center',  
+    padding: 30,
+    marginTop: 100 
   },
-  flashingText: {
-    fontFamily: 'LexendDeca',
-    fontStyle: 'normal',
-    fontSize: 50,
-    transform: [{ scaleY: 2 }],
-    color: '#FFFFFF',
-    marginTop: 145,
-    fontWeight: 'bold',
-  },
+
   title: {
     fontFamily: 'LexendDeca',
     fontStyle: 'normal',
