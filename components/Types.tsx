@@ -1,5 +1,5 @@
 export type User = {
-    id: string;
+    id: number;
     username: string;
     email: string;
     picture: string;
@@ -38,7 +38,7 @@ export type Friend = {
 
 // Fake Infromation For Users and Polls
 export const fakeuser: User = {
-    id: "1",
+    id: 1,
     username: "hbox",
     email: "example@gmail.com",
     picture: "https://yt3.googleusercontent.com/ytc/AIdro_nAQSpke2TuTIcm6donidgAH2BHGc-HyOzPptIjiU82tg=s160-c-k-c0x00ffffff-no-rj"

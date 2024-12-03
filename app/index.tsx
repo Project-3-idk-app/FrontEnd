@@ -8,8 +8,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient'; 
 import { useFonts } from 'expo-font';
 import { useNavigation } from 'expo-router';
-import { fakeuser } from '@/components/Types';
+import { fakeuser, User } from '@/components/Types';
 import IdkLogo from '@/components/Logo';
+import { getUserInfoDb } from '@/components/DataBaseFuncs';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -33,16 +34,27 @@ export default function HomeScreen() {
 
   // I'm working on saving the user info with these two functions from the video I'm watching, its not done yet 
   async function handleSignInWithGoogle() {
-    const user = await AsyncStorage.getItem("@user");
+    let user = await AsyncStorage.getItem("@user");
     console.log(JSON.parse(user));
     // if the user has never signed in
     if(!user)
     {
       if(response?.type === "success")
       {
-        await getUserInfo(response.authentication?.accessToken);
-        // TODO: check with our database to see if this user already exists: if not, create username, else go to tabs
-        navigator.navigate('(tabs)');
+        await getGoogleInfo(response.authentication?.accessToken);
+        user = await AsyncStorage.getItem("@user");
+        //TODO, the user id is undefined somehow gotta fix that
+        let check = await getUserInfoDb(user.id);
+        console.log("user info is", check)
+        if(check == null) {
+          // user doesnt exist in db yet
+          // page to make username
+        }
+        else {
+          //user exists
+          navigator.navigate('(tabs)')
+        }
+
       }
     }
     else
@@ -57,7 +69,7 @@ export default function HomeScreen() {
     await handleSignInWithGoogle();
   }
 
-  const getUserInfo = async (token: string | undefined) => {
+  const getGoogleInfo = async (token: string | undefined) => {
     if(!token) return;
     try {
       const response = await fetch(
