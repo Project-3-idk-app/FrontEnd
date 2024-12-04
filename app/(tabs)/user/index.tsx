@@ -80,7 +80,7 @@ export default function UserScreen() {
                                 borderRadius: 25,
                             },
                         ]}
-                        onPress={() => console.log('setting pressed')}
+                        onPress={() => navigator.navigate('settings')}
                     >
                         <Image source={require('@/assets/images/setting.png')} style={styles.setting} />
                     </Pressable>

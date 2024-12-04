@@ -29,7 +29,6 @@ export default function SingUpScreen() {
   }, []);
 
   const usernameCheck = async () => {
-    // TODO check if user name has already been taken, for now its going to work either way.
     user.username = username;
     console.log(`user is `, user);
     let result = await searchUsersBool(username);
