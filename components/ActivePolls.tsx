@@ -44,15 +44,36 @@ const ActivePoll = ({ poll_id }) => {
     }
   }, [poll_id]);
 
-  const handleVote = async (optionText) => {
+  const handleVote = async (optionText, optionId) => {
     if (!voted && poll_id) {
       try {
-        // Simulate vote (you'll need to implement actual vote submission)
+        // Simulate vote on the front end (update local results)
         setResults((prev) => ({
           ...prev,
           [optionText]: (prev[optionText] || 0) + 1,
         }));
         setVoted(true);
+  
+        // Send vote to the backend
+        const userId = "2"; // replace this with the actual logged in user's ID
+        const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/create/vote/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            poll: poll_id,
+            option: optionId,  
+            user: userId,     
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to submit vote');
+        }
+  
+        const data = await response.json();
+        console.log('Vote successfully submitted:', data);
       } catch (error) {
         console.error('Error submitting vote:', error);
       }
@@ -82,7 +103,7 @@ const ActivePoll = ({ poll_id }) => {
         {options.map((option) => (
           <TouchableOpacity
             key={option.option_id}
-            onPress={() => handleVote(option.option_text)}
+            onPress={() => handleVote(option.option_text, option.option_id)}
             disabled={voted}
             style={[
               styles.optionButton,
