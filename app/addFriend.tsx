@@ -109,9 +109,10 @@ const styles = StyleSheet.create({
     inputWrapper: {
         flex: 1,
         maxWidth: '70%',
+        
     },
     searchText: {
-        backgroundColor: '#5D47A0',
+        backgroundColor: '#665DB7',
         borderRadius: 25,
         paddingHorizontal: 20,
         paddingVertical: 12,
