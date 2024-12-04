@@ -22,7 +22,7 @@ const getUserFromStorage = async () => {
     try {
         const user = await AsyncStorage.getItem("@user");
         if (user) {
-            console.log("User found:", JSON.parse(user));
+            console.log("User locally saved:", JSON.parse(user));
             return JSON.parse(user);
         } else {
             console.log("No user found in AsyncStorage.");
