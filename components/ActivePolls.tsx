@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ThemedText } from './ThemedText';
 
 const ActivePoll = ({ poll_id }) => {
   const [pollData, setPollData] = useState(null);
@@ -84,7 +85,7 @@ const ActivePoll = ({ poll_id }) => {
 
   // If pollData is not loaded yet, show a loading state
   if (!pollData) {
-    return <Text>Loading...</Text>;
+    return <ThemedText>Loading...</ThemedText>;
   }
 
   const { title, options } = pollData;

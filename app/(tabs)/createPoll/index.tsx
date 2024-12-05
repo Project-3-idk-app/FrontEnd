@@ -4,16 +4,50 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getUserInfoDb } from '@/components/DataBaseFuncs';
 import user from '../user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Get screen dimensions
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function FeedScreen() {
+
+    const[user, setUser] = useState(); 
+    const[userId, setUserId] = useState();
     const [question, setQuestion] = useState(''); 
     const [choices, setChoices] = useState(['','']);
     const [loading, setLoading] = useState(false);
+
+    const getUserFromStorage = async () => {
+        try {
+            const user = await AsyncStorage.getItem("@user");
+            if (user) {
+                console.log("User locally saved:", JSON.parse(user));
+                return JSON.parse(user);
+            } else {
+                console.log("No user found in AsyncStorage.");
+                return null;
+            }
+        } catch (error) {
+            console.error("Error getting user from AsyncStorage", error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const user = await getUserFromStorage();
+            if (user) {
+                setUser(user);
+                console.log("User ID:", user.id);
+            }
+        };
+
+        fetchUser();
+        console.log(JSON.stringify(user, null, 2));
+    }, []);
 
     const addChoice = () => {
         if(choices.length < 4){
@@ -55,7 +89,7 @@ export default function FeedScreen() {
                 throw new Error('Failed to create poll');
             }
             const data = await response.json(); 
-            return data.id; 
+            return data.poll_id;
         } catch(error){
             console.error('Error creating poll:', error);
             throw error; 
@@ -92,18 +126,49 @@ export default function FeedScreen() {
             return; 
         }
         setLoading(true);
-        try{
-            const pollId = await createPoll();
-            const optionPromises = choices.map(choice => createOption(pollId, choice));
-            await Promise.all(optionPromises);
-            alert("Poll Created Successfully!");
-            clearPoll();
-        } catch (error){
+        let createdPollId = null;
+        
+        try {
+            // Create the poll first
+            createdPollId = await createPoll();
+            console.log('Created poll with ID:', createdPollId);
+            
+            try {
+                // Try to create all options
+                const optionPromises = choices.map(choice => createOption(createdPollId, choice));
+                await Promise.all(optionPromises);
+                alert("Poll Created Successfully!");
+                clearPoll();
+            } catch (optionError) {
+                // If option creation fails, delete the poll
+                console.error('Error creating options:', optionError);
+                
+                try {
+                    const deleteResponse = await fetch(
+                        `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/delete/poll/${createdPollId}/`,
+                        {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        }
+                    );
+                    
+                    if (!deleteResponse.ok) {
+                        throw new Error('Failed to delete poll after option creation error');
+                    }
+                } catch (deleteError) {
+                    console.error('Error deleting poll:', deleteError);
+                }
+                
+                throw optionError; 
+            }
+        } catch (error) {
             alert("Error creating poll: " + error.message);
         } finally {
             setLoading(false);
         }
-    }; 
+    };
 
     return (
         <SafeAreaView style={styles.container}>
