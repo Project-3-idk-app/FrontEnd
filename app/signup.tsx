@@ -1,6 +1,4 @@
 import { Image, StyleSheet, Platform, TouchableOpacity, View, Text, TextInput, } from 'react-native';
-
-
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
 import IdkLogo from '@/components/Logo';
