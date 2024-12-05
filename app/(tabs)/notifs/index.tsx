@@ -17,19 +17,6 @@ export default function FeedScreen() {
         'LexendDeca': require('@/assets/fonts/LexendDecaRegular.ttf'),
     });
 
-    const getUserFromStorage = async () => {
-        try {
-            const userStr = await AsyncStorage.getItem("@user");
-            if (userStr) {
-                return JSON.parse(userStr);
-            }
-            return null;
-        } catch (error) {
-            console.error("Error getting user from AsyncStorage:", error);
-            return null;
-        }
-    };
-
     const fetchFriendRequests = async (userId) => {
         let temp = [];
         try{
@@ -39,11 +26,10 @@ export default function FeedScreen() {
             console.error("notifs friendFetch: ", error);
         }
 
-
         setLoading(false);
     };
 
-    const handleAcceptRequest = async (friendId) => {
+    const handleAcceptRequest = async (friendId : string) => {
 
         // Remove the accepted request from the list
         setFriendRequests(prev => 
@@ -68,10 +54,11 @@ export default function FeedScreen() {
         const fetchUser = async () => {
             try {
                 const data = await AsyncStorage.getItem("@user");
-                const user = JSON.parse(data);
-                if (user) {
-                    setCurrentUser(user);
-                    await fetchFriendRequests(user.id);
+                const userObj = JSON.parse(data);
+                if (userObj) {
+                    setCurrentUser(userObj);
+                    console.log("notifs: current User: ", currentUser);
+                    await fetchFriendRequests(userObj.id);
                 }
             } catch (error) {
                 let temp = currentUser;
@@ -81,7 +68,6 @@ export default function FeedScreen() {
             }
         };
         fetchUser();
-        console.log('addFriend.tsx: ' + JSON.stringify(user));
     }, []);
     if (!fontsLoaded) {
         return null;
