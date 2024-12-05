@@ -5,56 +5,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
-import { fakeuser } from '@/components/Types';
+import { fakeFriendRequests, fakeuser } from '@/components/Types';
 import FriendRequestComponent from '@/components/Request';
-
-// Fake friend data
-const fakeFriendRequests = [
-    {
-        id: 1,
-        userId: 101,
-        username: 'JustNekoChris',
-        status: 'pending',
-        created_at: '2024-03-25T10:30:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=JustNekoChris'
-    },
-    {
-        id: 2,
-        userId: 102,
-        username: 'DaSpeedSta',
-        status: 'pending',
-        created_at: '2024-03-24T15:45:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DaSpeedSta'
-    },
-    {
-        id: 3,
-        userId: 103,
-        username: 'HappyFunBuns',
-        status: 'pending',
-        created_at: '2024-03-24T09:20:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=HappyFunBuns'
-    },
-    {
-        id: 4,
-        userId: 104,
-        username: 'Chgunz',
-        status: 'pending',
-        created_at: '2024-03-23T18:15:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=GamingPro'
-    },
-    {
-        id: 5,
-        userId: 105,
-        username: 'FrogWizard',
-        status: 'pending',
-        created_at: '2024-03-23T14:10:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frog'
-    }
-];
 
 export default function FeedScreen() {
     const [currentUser, setCurrentUser] = useState(fakeuser);
-    const [friendRequests, setFriendRequests] = useState([]);
+    const [friendRequests, setFriendRequests] = useState(fakeFriendRequests);
     const [loading, setLoading] = useState(true);
 
     const [fontsLoaded] = useFonts({
@@ -75,7 +31,16 @@ export default function FeedScreen() {
     };
 
     const fetchFriendRequests = async (userId) => {
-        setFriendRequests(fakeFriendRequests);
+        let temp = [];
+        try{
+            // get the requests that are pending to send them to the top
+            // get the request that are finished to put them at the end
+            
+        } catch (error) {
+            console.error("notifs friendFetch: ", error);
+        }
+
+
         setLoading(false);
     };
 
@@ -99,18 +64,26 @@ export default function FeedScreen() {
         console.log(`Declined friend request from user ${friendId}`);
     };
 
+    // When screen is focused on, get User information
     useEffect(() => {
-        const initialize = async () => {
-            const user = await getUserFromStorage();
-            if (user) {
-                setCurrentUser(user);
+        const fetchUser = async () => {
+            try {
+                const data = await AsyncStorage.getItem("@user");
+                const user = JSON.parse(data);
+                if (user) {
+                    setCurrentUser(user);
+                    await fetchFriendRequests(user.id);
+                }
+            } catch (error) {
+                let temp = currentUser;
+                temp.id = '-1'
+                setCurrentUser(temp);
+                console.error("Error getting user from AsyncStorage", error);
             }
-            await fetchFriendRequests();
         };
-
-        initialize();
+        fetchUser();
+        console.log('addFriend.tsx: ' + JSON.stringify(user));
     }, []);
-
     if (!fontsLoaded) {
         return null;
     }

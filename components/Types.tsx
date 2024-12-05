@@ -1,3 +1,12 @@
+export const showAlert = (title, message) => {
+    if (Platform.OS === 'web') {
+        alert(`${title}: ${message}`);
+    } else {
+        Alert.alert(title, message);
+    }
+};
+
+
 export type User = {
     id: string;
     username: string;
@@ -168,4 +177,48 @@ export const fakeCurrent = [
             { friendVoteNum: 0, optionVoteNum: 5, optionTitle: "Bird" },
         ],
     },
+];
+
+// Fake friend data
+export const fakeFriendRequests = [
+    {
+        id: 1,
+        userId: 101,
+        username: 'JustNekoChris',
+        status: 'pending',
+        created_at: '2024-03-25T10:30:00Z',
+        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=JustNekoChris'
+    },
+    {
+        id: 2,
+        userId: 102,
+        username: 'DaSpeedSta',
+        status: 'pending',
+        created_at: '2024-03-24T15:45:00Z',
+        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DaSpeedSta'
+    },
+    {
+        id: 3,
+        userId: 103,
+        username: 'HappyFunBuns',
+        status: 'pending',
+        created_at: '2024-03-24T09:20:00Z',
+        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=HappyFunBuns'
+    },
+    {
+        id: 4,
+        userId: 104,
+        username: 'Chgunz',
+        status: 'pending',
+        created_at: '2024-03-23T18:15:00Z',
+        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=GamingPro'
+    },
+    {
+        id: 5,
+        userId: 105,
+        username: 'FrogWizard',
+        status: 'pending',
+        created_at: '2024-03-23T14:10:00Z',
+        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frog'
+    }
 ];

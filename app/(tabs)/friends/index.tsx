@@ -55,7 +55,6 @@ const handleUnfollow = (friendId) => {
 };
 
 const handleAddFriend = () => {
-    // Add friend functionality here
     navigator.navigate('addFriend');
 };
 

@@ -87,7 +87,7 @@ export default function UserScreen() {
                 </View>
             </View>
 
-            <ScrollView contentContainerStyle={{ flexGrow: 1}} style={{flex:1}}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, margin: 20}} style={{flex:1}}>
                 <ThemedText type="subtitle">Active Polls()</ThemedText>
                 <PollScroll polls={fakeCurrent} onButtonPress={openModal}/>
                 <ThemedText type="subtitle">Completed Polls()</ThemedText>

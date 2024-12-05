@@ -1,4 +1,5 @@
-import { User } from "./Types";
+import { Alert, Platform } from "react-native";
+import { showAlert, User } from "./Types";
 
 // Returns user information or null
 export const getUserInfoDb = async (userId : number) => {
@@ -82,6 +83,26 @@ export const searchUsersBool = async (user: string) => {
     }
 };
 
+export const searchUsersArray = async (user: string) => {
+    console.log("user to be searched", user);
+    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/searchusers/${user}/`;
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        console.log(data);
+        return data as User[];
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
+};
+
 export const updateUser = async (user: User) => {
     console.log("updateUser: searching on", user);
     const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/update/user/${user.id}/`;
@@ -138,3 +159,38 @@ export const deleteAccount = async (user: string) => {
         return false;
     }
 };
+
+// 0 - not recieved, 1 - accepted, 2 - declined
+export const sendFriendRequest = async (sender: string, reciever: string) => {
+    console.log('sendFriendRequest: x wants y: ', sender, reciever);
+    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/create/friend/`;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "user_id1" : sender,
+                "user_id2" : reciever,
+                "status": 0
+            }),
+        });
+
+        const data: User = await response.json();
+        console.log('sendFriendRequest', data);
+        if (data.error) {
+            console.log('sendFriendRequest:', data.error);
+            return null;
+        }
+        else if(data.non_field_errors) {
+            showAlert("Error", "You already made a friend request with this person!");
+            return null;
+        }
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
+

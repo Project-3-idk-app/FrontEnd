@@ -1,13 +1,14 @@
-import { Alert, Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'expo-router';
-import { fakeConcluded, fakeCurrent, fakeuser } from '@/components/Types';
+import { fakeConcluded, fakeCurrent, fakeuser, showAlert } from '@/components/Types';
 import PollScroll from '@/components/Polls';
 import { deleteAccount, searchUsersBool, updateUser } from '@/components/DataBaseFuncs';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function UserScreen() {
     const navigator = useNavigation();
@@ -29,14 +30,6 @@ export default function UserScreen() {
         } catch (error) {
             console.error("Error getting user from AsyncStorage", error);
             return null;
-        }
-    };
-
-    const showAlert = (title, message) => {
-        if (Platform.OS === 'web') {
-            alert(`${title}: ${message}`);
-        } else {
-            Alert.alert(title, message);
         }
     };
 
@@ -112,28 +105,19 @@ export default function UserScreen() {
     return (
         <ThemedView style={styles.fullPage}>
             <View style={styles.topTab}>
-
-                <View style={styles.userInfo}>
-                    <Pressable
-                        style={({ pressed }) => [
-                            {
-                                // backgroundColor: pressed ? '#796edb' : '#665DB7', // Change color on press
-                                padding: 10,
-                                borderRadius: 25,
-                                width: '90%',
-                                alignItems: 'flex-start',
-                            },
-                        ]}
-                        onPress={() => navigator.navigate('index')}
-                    >
-                        <Text style={{ color: 'white', fontFamily: 'LexendDeca', fontSize: 32, backgroundColor: '#541388', borderRadius: 10 }}> &lt;- </Text>
-                    </Pressable>
+                <TouchableOpacity
+                    onPress={() => navigator.navigate('index')}
+                    style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={28} color="white" />
+                </TouchableOpacity>
+                <View style={styles.titleContainer}>
+                    <Text style={styles.tabText}>Add a Friend</Text>
                 </View>
-                <View style={{ flex: 1 }} />
+                <View style={styles.backButton} />
             </View>
 
             <View style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column', marginTop: 10}}>
-                <ThemedText style={{fontSize: 36, fontFamily: 'LexendDeca' }}>Edit Profile</ThemedText>
+                <ThemedText style={{fontSize: 36, lineHeight:50, fontFamily: 'LexendDeca'}}>Edit Profile</ThemedText>
                 <View style={styles.card}>
                     <View>
                         <Text style={styles.label}>Username:</Text>
@@ -162,7 +146,7 @@ export default function UserScreen() {
                                     backgroundColor: pressed ? '#796edb' : '#665DB7', // Change color on press
                                     padding: 10,
                                     borderRadius: 25,
-                                    width: '40%',
+                                    width: '55%',
                                     alignItems: 'center',
                                     margin: 10,
                                 },
@@ -177,7 +161,7 @@ export default function UserScreen() {
                                     backgroundColor: pressed ? '#2e3959' : '#1E253A', // Change color on press
                                     padding: 10,
                                     borderRadius: 25,
-                                    width: '40%',
+                                    width: '55%',
                                     alignItems: 'center',
                                 },
                             ]}
@@ -298,5 +282,20 @@ const styles = StyleSheet.create({
         fontFamily: 'LexendDeca',
         color: 'white',
         margin: 5,
-    }
+    },
+    titleContainer: {
+        flex: 4,
+        alignItems: 'center',
+    },
+    backButton: {
+        padding: 10,
+        flex: 1,
+    },
+    tabText: {
+        fontFamily: 'LexendDeca',
+        fontSize: 30,
+        color: '#FFFFFF',
+        textAlign: 'center',
+        paddingVertical: 10,
+    },
 });
