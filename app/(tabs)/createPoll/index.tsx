@@ -13,6 +13,7 @@ const windowHeight = Dimensions.get('window').height;
 export default function FeedScreen() {
     const [question, setQuestion] = useState(''); 
     const [choices, setChoices] = useState(['','']);
+    const [loading, setLoading] = useState(false);
 
     const addChoice = () => {
         if(choices.length < 4){
@@ -38,18 +39,70 @@ export default function FeedScreen() {
         }
     };
 
-    const submitPoll = () => {
-        for(let i = 0; i < choices.length; i++)
-        {
-            if(choices[i] == '' || question == '')
-            {
-                alert("Error: Cannot have an empty question or choice.")
-                return;
+    const createPoll = async () => {
+        try{
+            const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/create/poll/',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user: user.id,
+                    title: question
+                })
+            });
+            if(!response.ok){
+                throw new Error('Failed to create poll');
             }
+            const data = await response.json(); 
+            return data.id; 
+        } catch(error){
+            console.error('Error creating poll:', error);
+            throw error; 
         }
-        alert("Poll Created!");
-        console.log("Question:", question);
-        console.log("Choices:", choices);
+    };
+
+    const createOption = async (pollId, optionText) => {
+        try{
+            const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/create/option/',{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    poll: pollId,
+                    option_text: optionText,
+                    user: user.id
+                })
+            }); 
+            if(!response.ok){
+                throw new Error('Failed to create option');
+            }
+
+            return await response.json();
+        } catch (error){
+            console.error('Error creating option:', error);
+            throw error;
+        }
+    };
+
+    const submitPoll = async () => {
+        if(choices.some(choice => choice === '') || question === ''){
+            alert("Error: Cannot have an empty question or choice.");
+            return; 
+        }
+        setLoading(true);
+        try{
+            const pollId = await createPoll();
+            const optionPromises = choices.map(choice => createOption(pollId, choice));
+            await Promise.all(optionPromises);
+            alert("Poll Created Successfully!");
+            clearPoll();
+        } catch (error){
+            alert("Error creating poll: " + error.message);
+        } finally {
+            setLoading(false);
+        }
     }; 
 
     return (
@@ -157,7 +210,6 @@ const styles = StyleSheet.create({
     },
     fullPage: {
         flex: 1,
-        backgroundColor: '#F1E9DA',
         alignItems: 'center',
     },
     rectangle13: {
@@ -184,7 +236,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 20,
+        paddingVertical: 10,
     },
     crossIcon: {
         width: 25,
@@ -193,14 +245,15 @@ const styles = StyleSheet.create({
     inputContainer: {
         width: '100%',
         alignItems: 'center',
+        justifyContent: 'center',
         marginBottom: 20,
     },
     askQuestion: {
         width: '90%',
+        paddingTop:20,
         minHeight: 50,
         backgroundColor: '#5D47A0',
         borderRadius: 5,
-        paddingHorizontal: 15,
         fontSize: 20,
         color: '#FFFFFF',
         textAlign: 'center',
@@ -236,7 +289,7 @@ const styles = StyleSheet.create({
     addOptionContainer: {
         flexDirection: 'row', 
         alignItems: 'center', 
-        marginVertical: 10,
+        
     },
     addAnotherOption: {
         fontSize: 14,

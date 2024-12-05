@@ -76,6 +76,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
         flex: 1,
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
+        fontWeight: '400',
     },
     buttonContainer: {
         flexDirection: 'row',
