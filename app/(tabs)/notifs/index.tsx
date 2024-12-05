@@ -33,9 +33,8 @@ export default function FeedScreen() {
     const fetchFriendRequests = async (userId) => {
         let temp = [];
         try{
-            // get the requests that are pending to send them to the top
-            // get the request that are finished to put them at the end
-            
+            // TODO: get the requests that are pending to send them to the top
+
         } catch (error) {
             console.error("notifs friendFetch: ", error);
         }
