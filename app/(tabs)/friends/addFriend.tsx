@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         backgroundColor: 'white',
-        padding: 20,
+        padding: 100,
         borderRadius: 10,
         alignItems: 'center',
         shadowColor: '#000',

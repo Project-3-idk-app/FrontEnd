@@ -163,7 +163,11 @@ export const deleteAccount = async (user: string) => {
 // 0 - not recieved, 1 - accepted, 2 - declined
 export const sendFriendRequest = async (sender: string, reciever: string) => {
     console.log('sendFriendRequest: x wants y: ', sender, reciever);
-    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/create/friend/`;
+    if(sender === reciever){
+        showAlert("Error", "Cant send a friend request to yourself!");
+        return null;
+    }
+    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/friendrequest/${sender}/${reciever}/`;
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -179,17 +183,21 @@ export const sendFriendRequest = async (sender: string, reciever: string) => {
 
         const data: User = await response.json();
         console.log('sendFriendRequest', data);
-        if (data.error) {
+        if (data.error){
+            if (data.error == 'Friendship already exists') {
+                showAlert("Error", "You already made a friend request with this person!")
+            }
+            return null;
+        }
+        else if ((data.detail == 'Method "GET" not allowed.')) {
             console.log('sendFriendRequest:', data.error);
             return null;
         }
-        else if(data.non_field_errors) {
-            showAlert("Error", "You already made a friend request with this person!");
-            return null;
-        }
+
         return data;
     } catch (error) {
-        console.error('Error:', error);
+        console.error('sendFriendRequest: Error:', error);
+        showAlert("Error", "Please try again")
         return null;
     }
 };

@@ -1,3 +1,5 @@
+import { Alert, Platform } from "react-native";
+
 export const showAlert = (title, message) => {
     if (Platform.OS === 'web') {
         alert(`${title}: ${message}`);
