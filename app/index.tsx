@@ -7,8 +7,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient'; 
 import { useFonts } from 'expo-font';
 import { useNavigation } from 'expo-router';
-import { fakeuser } from '@/components/Types';
+import { fakeuser, User } from '@/components/Types';
 import IdkLogo from '@/components/Logo';
+import { getUserInfoDb } from '@/components/DataBaseFuncs';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -18,9 +19,6 @@ export default function HomeScreen() {
   const [fontsLoaded] = useFonts({
     'LexendDeca': require('../assets/fonts/LexendDecaRegular.ttf'), 
   });
-
-  //Initialize User Info Variables 
-  const [userInfo, setUserInfo] = React.useState(null);
 
   // Request for Google Auth
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -32,21 +30,34 @@ export default function HomeScreen() {
 
   // I'm working on saving the user info with these two functions from the video I'm watching, its not done yet 
   async function handleSignInWithGoogle() {
-    const user = await AsyncStorage.getItem("@user");
-    console.log(JSON.parse(user));
-    // if the user has never signed in
+    let user = await AsyncStorage.getItem("@user");
+    console.log("local storage currently has: ", JSON.parse(user));
+    // if the user hasnt signed in
     if(!user)
     {
       if(response?.type === "success")
       {
-        await getUserInfo(response.authentication?.accessToken);
-        // TODO: check with our database to see if this user already exists: if not, create username, else go to tabs
-        navigator.navigate('(tabs)');
+        await getGoogleInfo(response.authentication?.accessToken);
+        user = await AsyncStorage.getItem("@user");
+        user = JSON.parse(user);
+        console.log('user info for checking the database is ', user);
+        let check = await getUserInfoDb(user.id);
+        console.log("user info is", check)
+        if(check == null) {
+          // user doesnt exist in our db
+          navigator.navigate('signup');
+        }
+        else {
+          // user exists
+          await AsyncStorage.setItem("@user", JSON.stringify(check));
+          navigator.navigate('(tabs)')
+        }
+
       }
     }
     else
     {
-      setUserInfo(JSON.parse(user));
+      // if the user has signed in
       navigator.navigate('(tabs)');
     }
   }
@@ -56,8 +67,9 @@ export default function HomeScreen() {
     await handleSignInWithGoogle();
   }
 
-  const getUserInfo = async (token: string | undefined) => {
+  const getGoogleInfo = async (token: string | undefined) => {
     if(!token) return;
+    console.log("attempting to fetch");
     try {
       const response = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
@@ -65,10 +77,11 @@ export default function HomeScreen() {
           headers: {Authorization: `Bearer ${token}`},
         }
       );
+      console.log("post fetch");
       let user = await response.json();
+      console.log("post json change")
       user.username = 'none';
       await AsyncStorage.setItem("@user", JSON.stringify(user));
-      setUserInfo(user);
     } catch(error){
       // error handler
     }
