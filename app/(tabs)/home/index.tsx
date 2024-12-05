@@ -13,19 +13,9 @@ export default function FeedScreen() {
   useEffect(() => {
     const fetchPolls = async () => {
       try {
-        const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/');
+        const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/polls/');
         const data = await response.json();
-        
-        // Filter for active polls
-        const activePolls = data.polls.filter(poll => poll.is_active);
-        
-        // Attach options to each poll
-        const pollsWithOptions = activePolls.map(poll => ({
-          ...poll,
-          options: data.options.filter(option => option.poll === poll.poll_id)
-        }));
-
-        setPolls(pollsWithOptions);
+        setPolls(data); // API now returns active polls directly
         setLoading(false);
       } catch (error) {
         console.error('Error fetching polls:', error);
@@ -56,22 +46,23 @@ export default function FeedScreen() {
         ) : error ? (
           <Text style={styles.errorText}>{error}</Text>
         ) : (
-        <View style={styles.container}>
-          <FlatList
-            data={polls}
-            keyExtractor={(item) => item.poll_id.toString()}
-            renderItem={renderPollItem}
-            contentContainerStyle={styles.pollList}
-            ListEmptyComponent={
-              <Text style={styles.errorText}>No active polls available</Text>
-            }
-          />
-        </View>
+          <View style={styles.container}>
+            <FlatList
+              data={polls}
+              keyExtractor={(item) => item.poll_id.toString()}
+              renderItem={renderPollItem}
+              contentContainerStyle={styles.pollList}
+              ListEmptyComponent={
+                <Text style={styles.errorText}>No active polls available</Text>
+              }
+            />
+          </View>
         )}
       </SafeAreaView>
     </ThemedView>
   );
 }
+
 const styles = StyleSheet.create({
     fullPage: {
         flex: 1,
