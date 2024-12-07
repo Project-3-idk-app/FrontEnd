@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { ThemedText } from './ThemedText';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Get screen dimensions
 const windowWidth = Dimensions.get('window').width;
@@ -23,13 +24,40 @@ const windowHeight = Dimensions.get('window').height;
     return emojis[Math.floor(Math.random() * emojis.length)];
 };
 
-const ActivePoll = ({ poll_id }) => {
+const getUserFromStorage = async () => {
+  try {
+      const user = await AsyncStorage.getItem("@user");
+      if (user) {
+          console.log("User locally saved:", JSON.parse(user));
+          return JSON.parse(user);
+      } else {
+          console.log("No user found in AsyncStorage.");
+          return null;
+      }
+  } catch (error) {
+      console.error("Error getting user from AsyncStorage", error);
+      return null;
+  }
+};
+
+
+const ActivePoll = ({ poll_id, onVoteComplete }) => {
   const [pollData, setPollData] = useState(null);
+  const [user, setUser] = useState(); 
   const [voted, setVoted] = useState(false);
   const [results, setResults] = useState({});
   const [pollEmoji] = useState(getRandomEmoji());
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getUserFromStorage();
+      if (user) {
+          setUser(user);
+      }
+  };
+  fetchUser();
+  console.log(JSON.stringify(user, null, 2));
+
     const fetchPollData = async () => {
       try {
         const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/');
@@ -78,16 +106,22 @@ const ActivePoll = ({ poll_id }) => {
         setVoted(true);
   
         // Send vote to the backend
-        const userId = "2"; // replace this with the actual logged in user's ID
+        const userId = user.id;  // Converts user.id to an integer (base 10)
+        const requestData = {
+          "option": optionId,
+          "poll": poll_id,
+          "user": userId
+        };
+        console.log('Request Data:', requestData);
         const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/create/vote/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            poll: poll_id,
-            option: optionId,  
-            user: userId,     
+            "option": optionId,
+            "poll": poll_id,
+            "user": userId
           }),
         });
   
@@ -97,6 +131,12 @@ const ActivePoll = ({ poll_id }) => {
   
         const data = await response.json();
         console.log('Vote successfully submitted:', data);
+
+        if(onVoteComplete){
+          setTimeout(() =>{
+            onVoteComplete();
+          }, 3000);
+        }
       } catch (error) {
         console.error('Error submitting vote:', error);
       }
@@ -116,6 +156,7 @@ const ActivePoll = ({ poll_id }) => {
   if (!options || options.length === 0) {
     return null;
   }
+  
 
   return (
   <View style={styles.maxWidthContainer}>

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef} from 'react';
 import { Dimensions, StatusBar, StyleSheet, View, Text, ActivityIndicator,FlatList,} from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IdkLogo from '@/components/Logo';
 import ActivePoll from '@/components/ActivePolls';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -11,6 +12,8 @@ export default function FeedScreen() {
   const [polls, setPolls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPollIndex, setCurrentPollIndex] = useState(0);
+  const flatListRef = useRef(null);
 
   useEffect(() => {
     const fetchPolls = async () => {
@@ -25,13 +28,24 @@ export default function FeedScreen() {
         setLoading(false);
       }
     };
-
     fetchPolls();
   }, []);
 
-  const renderPollItem = ({ item }) => (
+  const scrollToNextPoll = () =>{
+    if(currentPollIndex < polls.length - 1){
+      const nextIndex = currentPollIndex + 1;
+      setCurrentPollIndex(nextIndex);
+
+      flatListRef.current?.scrollToIndex({
+        index: nextIndex,
+        animated: true,
+      });
+    }
+  }
+
+  const renderPollItem = ({ item, index }) => (
     <View style={styles.pollContainer}>
-      <ActivePoll poll_id={item.poll_id} />
+      <ActivePoll poll_id={item.poll_id} onVoteComplete={index === currentPollIndex ? scrollToNextPoll : null} />
     </View>
   );
 
@@ -65,6 +79,12 @@ export default function FeedScreen() {
             decelerationRate="fast"
             viewabilityConfig={viewabilityConfig}
             contentContainerStyle={styles.pollList}
+            initialScrollIndex={currentPollIndex}
+            getItemLayout={(data, index) => ({
+              length: SCREEN_HEIGHT *0.8,
+              offset: SCREEN_HEIGHT * 0.8 * index,
+              index,
+            })}
             ListEmptyComponent={
               <Text style={styles.errorText}>No active polls available</Text>
             }
