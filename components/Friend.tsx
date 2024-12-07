@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   maxWidthContainer: {
     width: '100%',
     maxWidth: Platform.select({
-      web: 700, 
+      web: 750, 
       android: '100%' 
     }),
   },
@@ -63,11 +63,15 @@ const styles = StyleSheet.create({
   avatarText: {
     color: '#333',
     fontWeight: 'bold',
+    fontFamily: 'LexendDeca',
+    fontStyle: 'normal',
   },
   username: {
     color: 'white',
     fontWeight: 'bold',
     marginLeft: 12,
+    fontFamily: 'LexendDeca',
+    fontStyle: 'normal',
   },
   unfollowButton: {
     backgroundColor: '#333',
@@ -78,6 +82,8 @@ const styles = StyleSheet.create({
   unfollowText: {
     color: 'white',
     fontWeight: 'bold',
+    fontFamily: 'LexendDeca',
+    fontStyle: 'normal',
   },
 });
 

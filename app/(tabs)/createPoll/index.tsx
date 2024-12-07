@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Dimensions, Platform, Image, StatusBar } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Dimensions, Platform, Image, StatusBar, Modal, Button } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedView } from '@/components/ThemedView';
@@ -13,12 +13,13 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function FeedScreen() {
-
-    const[user, setUser] = useState(); 
-    const[userId, setUserId] = useState();
+    const [user, setUser] = useState(); 
     const [question, setQuestion] = useState(''); 
     const [choices, setChoices] = useState(['','']);
     const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [modalType, setModalType] = useState('');
 
     const getUserFromStorage = async () => {
         try {
@@ -120,27 +121,36 @@ export default function FeedScreen() {
         }
     };
 
+    const showModal = (message, type) => {
+        setModalMessage(message);
+        setModalType(type);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        if (modalType === 'success') {
+            clearPoll();
+        }
+    };
+
     const submitPoll = async () => {
         if(choices.some(choice => choice === '') || question === ''){
-            alert("Error: Cannot have an empty question or choice.");
+            showModal("Cannot have an empty question or choice.", 'error');
             return; 
         }
         setLoading(true);
         let createdPollId = null;
         
         try {
-            // Create the poll first
             createdPollId = await createPoll();
             console.log('Created poll with ID:', createdPollId);
             
             try {
-                // Try to create all options
                 const optionPromises = choices.map(choice => createOption(createdPollId, choice));
                 await Promise.all(optionPromises);
-                alert("Poll Created Successfully!");
-                clearPoll();
+                showModal("Poll Created Successfully!", 'success');
             } catch (optionError) {
-                // If option creation fails, delete the poll
                 console.error('Error creating options:', optionError);
                 
                 try {
@@ -160,11 +170,10 @@ export default function FeedScreen() {
                 } catch (deleteError) {
                     console.error('Error deleting poll:', deleteError);
                 }
-                
-                throw optionError; 
+                showModal("Error creating poll options", 'error');
             }
         } catch (error) {
-            alert("Error creating poll: " + error.message);
+            showModal("Error creating poll: " + error.message, 'error');
         } finally {
             setLoading(false);
         }
@@ -243,6 +252,37 @@ export default function FeedScreen() {
                     </LinearGradient>
                 </TouchableOpacity>
             </ThemedView>
+            <Modal
+                animationType="fade"
+                transparent={true} 
+                visible={modalVisible}
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[
+                        styles.modalContent,
+                        modalType === 'error' ? styles.errorModal : styles.successModal
+                    ]}>
+                        <Text style={[
+                            styles.modalText,
+                            modalType === 'error' ? styles.errorText : styles.successText
+                        ]}>
+                            {modalMessage}
+                        </Text>
+                        <TouchableOpacity 
+                            style={[
+                                styles.modalButton,
+                                modalType === 'error' ? styles.errorButton : styles.successButton
+                            ]} 
+                            onPress={closeModal}
+                        >
+                            <Text style={styles.modalButtonText}>
+                                {modalType === 'error' ? 'Try Again' : 'Done'}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
@@ -317,6 +357,8 @@ const styles = StyleSheet.create({
         width: '90%',
         paddingTop:20,
         minHeight: 50,
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
         backgroundColor: '#5D47A0',
         borderRadius: 5,
         fontSize: 20,
@@ -340,6 +382,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingHorizontal: 15,
         fontSize: 15,
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
         color: '#F1E9DA',
         textAlign: 'center',
     },
@@ -361,6 +405,8 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         textAlign: 'center',
         marginVertical: 10,
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
     },
     expires: {
         fontSize: 15,
@@ -368,6 +414,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginVertical: 10,
         top: 30, 
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
     },
     createPollButton: {
         width: Math.min(windowWidth * 0.6, 209.25),
@@ -381,10 +429,70 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#FFFFFF',
         textAlign: 'center',
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
+
     },
     icon: {
         width: 16,
         height: 16,
         marginRight: 5,
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: 300,
+        padding: 20,
+        borderRadius: 15,
+        alignItems: 'center',
+        elevation: 5,
+    },
+    successModal: {
+        backgroundColor: '#FFFFFF',
+        borderColor: '#4CAF50',
+        borderWidth: 1,
+    },
+    errorModal: {
+        backgroundColor: '#FFFFFF',
+        borderColor: '#FF5252',
+        borderWidth: 1,
+    },
+    modalIcon: {
+        width: 50,
+        height: 50,
+        marginBottom: 15,
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    successText: {
+        color: '#4CAF50',
+    },
+    errorText: {
+        color: '#FF5252',
+    },
+    modalButton: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+        minWidth: 120,
+        alignItems: 'center',
+    },
+    successButton: {
+        backgroundColor: '#4CAF50',
+    },
+    errorButton: {
+        backgroundColor: '#FF5252',
+    },
+    modalButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '500',
     },
 });

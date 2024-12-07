@@ -52,12 +52,16 @@ export default function SingUpScreen() {
         colors={['#C2066D', '#541388']}
         style={styles.gradientBackground}>
         <View>
-          <IdkLogo fontSize={120} />
-
+          <View style={styles.logo}>
+            <View style={styles.welcomeContainer}>
+              <Text style={styles.welcomeText}>Welcome to </Text>
+              <IdkLogo fontSize={80} />
+              <Text style={styles.welcomeText}>, {user.given_name}</Text>
+            </View>
+          </View>
           {/* Username Input */}
           <View style={styles.inputContainer}>
-            <Text style={{ color: 'white' }}>Welcome to IDK {user.given_name}</Text>
-            <Text style={{ color: 'white' }}>Please enter a username</Text>
+            <Text style={styles.usernameText}>Please enter a username</Text>
             <TextInput
               style={styles.inputBox}
               placeholder="Username"
@@ -88,13 +92,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
+  logo: {
+    alignItems: 'center',
+  },
+  welcomeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   inputContainer: {
     marginTop: 20,
     alignItems: 'center',
     width: '100%',
   },
+  welcomeText:{
+    fontSize: 80,
+    fontFamily: 'LexendDeca',
+    fontStyle: 'normal',
+    fontWeight: '400',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.25)',
+    textShadowOffset: { width: 0, height: 4 },
+    textShadowRadius: 4,
+  },
+  usernameText:{
+    fontFamily: 'LexendDeca',
+    color: 'white',
+    fontSize: 20,
+    marginTop: -5,
+    marginBottom: 15
+  },
   inputBox: {
-    width: '80%',
+    width: '50%',
     padding: 12,
     borderRadius: 25,
     backgroundColor: '#fff',

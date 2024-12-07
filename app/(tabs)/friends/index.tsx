@@ -138,9 +138,9 @@ const styles = StyleSheet.create({
     },
     addButtonContainer: {
         alignItems: 'flex-end',
+        marginBottom: 18,
     },
     addButton: {
-        backgroundColor: '#FF0A78',
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 20,

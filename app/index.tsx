@@ -155,9 +155,9 @@ export default function HomeScreen() {
         {/* Google Button */}
         {Component}
         {/* Fake User Sign in for dev purposes */}
-        <View>
+        <View style={styles.debugButtonContainer}>
           <TouchableOpacity
-            style={styles.googleButton}
+            style={styles.debugButton}
             onPress={() => fakeSignIn()}>
             <View style={styles.buttonContent}>
               <Text style={styles.googleButtonText}>Debug Sign in</Text>
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   },
   gradientBackground: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between', 
     alignItems: 'center',
     padding: 16,
   },
@@ -183,22 +183,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',  
     alignItems: 'center',  
     padding: 30,
-    marginTop: 100 
+    marginTop: 170,
   },
-
   title: {
     fontFamily: 'LexendDeca',
     fontStyle: 'normal',
     fontWeight: '400',
     fontSize: 120,
     color: '#FFFFFF',
-    marginTop: 170,
     textShadowColor: 'rgba(0, 0, 0, 0.25)',  
     textShadowOffset: { width: 0, height: 4 }, 
     textShadowRadius: 4, 
   },
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
@@ -208,18 +205,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'black', 
     paddingVertical: 12,
-    paddingHorizontal: 24,
-    marginTop: -300,
+    paddingHorizontal: 50,
     borderRadius: 30,
     shadowColor: '#000',
+    marginTop: -70,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
+  debugButton:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'black', 
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 30,
+    shadowColor: '#000',
+    marginTop: -35,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  debugButtonContainer: {
+    marginBottom: 300  
+  },
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 5
   },
   googleLogo: {
     width: 24, 
@@ -230,5 +245,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'LexendDeca',
     fontStyle: 'normal',
-}
+  }
 })
