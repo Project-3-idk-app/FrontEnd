@@ -1,4 +1,4 @@
-import { Alert, Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import { useNavigation } from 'expo-router';
 import { fakeConcluded, fakeCurrent, fakeuser } from '@/components/Types';
 import PollScroll from '@/components/Polls';
 import { deleteAccount, searchUsersBool, updateUser } from '@/components/DataBaseFuncs';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function UserScreen() {
     const navigator = useNavigation();
@@ -107,33 +108,21 @@ export default function UserScreen() {
         }
     } 
 
-
-
     return (
         <ThemedView style={styles.fullPage}>
             <View style={styles.topTab}>
-
-                <View style={styles.userInfo}>
-                    <Pressable
-                        style={({ pressed }) => [
-                            {
-                                // backgroundColor: pressed ? '#796edb' : '#665DB7', // Change color on press
-                                padding: 10,
-                                borderRadius: 25,
-                                width: '90%',
-                                alignItems: 'flex-start',
-                            },
-                        ]}
+                    <TouchableOpacity 
                         onPress={() => navigator.navigate('index')}
-                    >
-                        <Text style={{ color: 'white', fontFamily: 'LexendDeca', fontSize: 32, backgroundColor: '#541388', borderRadius: 10 }}> &lt;- </Text>
-                    </Pressable>
+                        style={styles.backButton}>
+                        <Ionicons name="arrow-back" size={28} color="white" />
+                    </TouchableOpacity>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.tabText}>Edit Profile</Text>
+                    </View>
+                    <View style={styles.backButton} />
                 </View>
-                <View style={{ flex: 1 }} />
-            </View>
 
             <View style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column', marginTop: 10}}>
-                <ThemedText style={{fontSize: 36, fontFamily: 'LexendDeca' }}>Edit Profile</ThemedText>
                 <View style={styles.card}>
                     <View>
                         <Text style={styles.label}>Username:</Text>
@@ -251,9 +240,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
     },
+    tabText: {
+        fontFamily: 'LexendDeca',
+        fontSize: 30,
+        color: '#FFFFFF',
+        textAlign: 'center',
+        paddingVertical: 10,
+    },
+    titleContainer: {
+        flex: 4,
+        alignItems: 'center',
+    },
     image: {
         width: Platform.OS === "web" ? 100 : 50,
         height: Platform.OS === "web" ? 100 : 50,
+    },
+    backButton: {
+        padding: 10,
+        flex: 1,
     },
     modalOverlay: {
         flex: 1,
