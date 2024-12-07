@@ -13,7 +13,7 @@ export default function UserScreen() {
     const [user, setUser] = useState(fakeuser);
     const [modalVisible, setModalVisible] = useState(false);
     const [currentPollId, setPollId] = useState(-1);
-    const [polls, setPolls] = useState([]);
+    const [polls, setPolls] = useState<{ polls_active: any[], polls_inactive: any[] } | null>(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -56,8 +56,9 @@ export default function UserScreen() {
         console.log(JSON.stringify(user, null, 2));
 
         const fetchPolls = async () => {
+            setLoading(true);
             try {
-              const response = await fetch(`https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/userpolls/%{user.id}`);
+              const response = await fetch(`http://127.0.0.1:8000//userpolls/${user.id}`);
               const data = await response.json();
               setPolls(data); // API now returns active polls directly
               setLoading(false);
@@ -106,10 +107,24 @@ export default function UserScreen() {
             </View>
 
             <ScrollView contentContainerStyle={{ flexGrow: 1}} style={{flex:1}}>
-                <ThemedText type="subtitle">Active Polls()</ThemedText>
-                <PollScroll polls={fakeCurrent} onButtonPress={openModal}/>
-                <ThemedText type="subtitle">Completed Polls()</ThemedText>
-                <PollScroll polls={fakeConcluded} onButtonPress={openModal} />
+                {polls && (
+                    <>
+                        <ThemedText type="subtitle">Active Polls</ThemedText>
+                        <PollScroll polls={polls.polls_active} onButtonPress={openModal}/>
+                        <ThemedText type="subtitle">Completed Polls</ThemedText>
+                        <PollScroll polls={polls.polls_inactive} onButtonPress={openModal} />
+                    </>
+                )} 
+                {!polls && !loading &&(
+                    <View style={{ marginVertical: 20, alignContent: 'center'}}>
+                        <ThemedText type="defaultSemiBold">A whole lot of nothing, get to making polls!</ThemedText>
+                    </View>
+                )}
+                {loading && (
+                    <View style={{ marginVertical: 20, alignContent: 'center'}}>
+                        <ThemedText type="defaultSemiBold">Loading...</ThemedText>
+                    </View>
+                )}
 
                 <View style={{flexDirection:'row', justifyContent: 'center', alignItems: 'center'}}>
                     <View style={{ display: 'flex', flex: 1, margin: 10 }}/>

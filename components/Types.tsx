@@ -19,13 +19,17 @@ export type Option = {
     friendVoteNum: number;
 };
 
+export type OptionPoll = {
+    option: string;
+    votes: number;
+};
+
 // Type definition for the poll
 export type Poll = {
     pollId: number;
-    title: string;
-    totalVotes: number;
-    totalFriendVotes: number;
-    options: Option[];
+    pollTitle: string;
+    pollVotes: number;
+    options: OptionPoll[];
 };
 
 //Type definition for friend 
