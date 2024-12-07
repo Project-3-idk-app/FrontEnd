@@ -13,6 +13,9 @@ export default function UserScreen() {
     const [user, setUser] = useState(fakeuser);
     const [modalVisible, setModalVisible] = useState(false);
     const [currentPollId, setPollId] = useState(-1);
+    const [polls, setPolls] = useState([]);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const getUserFromStorage = async () => {
         try {
@@ -51,6 +54,21 @@ export default function UserScreen() {
 
         fetchUser();
         console.log(JSON.stringify(user, null, 2));
+
+        const fetchPolls = async () => {
+            try {
+              const response = await fetch(`https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/userpolls/%{user.id}`);
+              const data = await response.json();
+              setPolls(data); // API now returns active polls directly
+              setLoading(false);
+            } catch (error) {
+              console.error('Error fetching polls:', error);
+              setError('Error fetching polls: ' + (error.message || 'Unknown error'));
+              setLoading(false);
+            }
+        };
+      
+        fetchPolls();
     }, []);
 
     const closeModal = () => {
