@@ -50,6 +50,35 @@ export default function FeedScreen() {
         console.log(JSON.stringify(user, null, 2));
     }, []);
 
+    const getUserFromStorage = async () => {
+        try {
+            const user = await AsyncStorage.getItem("@user");
+            if (user) {
+                console.log("User locally saved:", JSON.parse(user));
+                return JSON.parse(user);
+            } else {
+                console.log("No user found in AsyncStorage.");
+                return null;
+            }
+        } catch (error) {
+            console.error("Error getting user from AsyncStorage", error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const user = await getUserFromStorage();
+            if (user) {
+                setUser(user);
+                console.log("User ID:", user.id);
+            }
+        };
+
+        fetchUser();
+        console.log(JSON.stringify(user, null, 2));
+    }, []);
+
     const addChoice = () => {
         if(choices.length < 4){
             setChoices([...choices, '']); 
@@ -143,10 +172,12 @@ export default function FeedScreen() {
         let createdPollId = null;
         
         try {
+            // Create the poll first
             createdPollId = await createPoll();
             console.log('Created poll with ID:', createdPollId);
             
             try {
+
                 const optionPromises = choices.map(choice => createOption(createdPollId, choice));
                 await Promise.all(optionPromises);
                 showModal("Poll Created Successfully!", 'success');

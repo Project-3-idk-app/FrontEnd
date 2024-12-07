@@ -68,7 +68,7 @@ export default function FeedScreen() {
             ListEmptyComponent={
               <Text style={styles.errorText}>No active polls available</Text>
             }
-          />
+          />    
         )}
       </SafeAreaView>
     </ThemedView>
