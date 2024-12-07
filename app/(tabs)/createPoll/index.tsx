@@ -13,13 +13,48 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function FeedScreen() {
+<<<<<<< HEAD
     const [user, setUser] = useState(); 
+=======
+
+    const[user, setUser] = useState(); 
+    const[userId, setUserId] = useState();
+>>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
     const [question, setQuestion] = useState(''); 
     const [choices, setChoices] = useState(['','']);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [modalType, setModalType] = useState('');
+
+    const getUserFromStorage = async () => {
+        try {
+            const user = await AsyncStorage.getItem("@user");
+            if (user) {
+                console.log("User locally saved:", JSON.parse(user));
+                return JSON.parse(user);
+            } else {
+                console.log("No user found in AsyncStorage.");
+                return null;
+            }
+        } catch (error) {
+            console.error("Error getting user from AsyncStorage", error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const user = await getUserFromStorage();
+            if (user) {
+                setUser(user);
+                console.log("User ID:", user.id);
+            }
+        };
+
+        fetchUser();
+        console.log(JSON.stringify(user, null, 2));
+    }, []);
 
     const getUserFromStorage = async () => {
         try {
@@ -143,14 +178,28 @@ export default function FeedScreen() {
         let createdPollId = null;
         
         try {
+<<<<<<< HEAD
+=======
+            // Create the poll first
+>>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
             createdPollId = await createPoll();
             console.log('Created poll with ID:', createdPollId);
             
             try {
+<<<<<<< HEAD
                 const optionPromises = choices.map(choice => createOption(createdPollId, choice));
                 await Promise.all(optionPromises);
                 showModal("Poll Created Successfully!", 'success');
             } catch (optionError) {
+=======
+                // Try to create all options
+                const optionPromises = choices.map(choice => createOption(createdPollId, choice));
+                await Promise.all(optionPromises);
+                alert("Poll Created Successfully!");
+                clearPoll();
+            } catch (optionError) {
+                // If option creation fails, delete the poll
+>>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
                 console.error('Error creating options:', optionError);
                 
                 try {
@@ -170,10 +219,18 @@ export default function FeedScreen() {
                 } catch (deleteError) {
                     console.error('Error deleting poll:', deleteError);
                 }
+<<<<<<< HEAD
                 showModal("Error creating poll options", 'error');
             }
         } catch (error) {
             showModal("Error creating poll: " + error.message, 'error');
+=======
+                
+                throw optionError; 
+            }
+        } catch (error) {
+            alert("Error creating poll: " + error.message);
+>>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
         } finally {
             setLoading(false);
         }

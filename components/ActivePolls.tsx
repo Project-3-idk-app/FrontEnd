@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { ThemedText } from './ThemedText';
 
 // Get screen dimensions
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+=======
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ThemedText } from './ThemedText';
+>>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
 
 const ActivePoll = ({ poll_id }) => {
   const [pollData, setPollData] = useState(null);
