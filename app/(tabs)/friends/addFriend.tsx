@@ -16,10 +16,6 @@ export default function FeedScreen() {
         'LexendDeca': require('@/assets/fonts/LexendDecaRegular.ttf'),
     });
 
-    const handleBack = () => {
-        navigator.goBack();
-    };
-
     React.useEffect(() => {
         navigator.setOptions({ headerShown: false });
     }, [navigator]);
@@ -33,7 +29,7 @@ export default function FeedScreen() {
             <SafeAreaView style={styles.container}>
                 <View style={styles.topTab}>
                     <TouchableOpacity 
-                        onPress={handleBack} 
+                        onPress={() => navigator.navigate('index')}
                         style={styles.backButton}>
                         <Ionicons name="arrow-back" size={28} color="white" />
                     </TouchableOpacity>
