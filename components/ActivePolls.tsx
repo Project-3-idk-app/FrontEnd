@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
+
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { ThemedText } from './ThemedText';
 
 // Get screen dimensions
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-<<<<<<< HEAD
-=======
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { ThemedText } from './ThemedText';
->>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
-=======
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
+
+  const getRandomEmoji = () => {
+    const emojis = [
+      '✨', '💫', '⭐', '🌟', '⚡', '🎵', '🎶', '🎪', '🎨', '🎭', '🎪',
+      '🎲', '🎮', '🎯', '🎳', '🎱', '🏆', '🎖️', '🎪', 
+      '💭', '💡', '📌', '🎈', '🎁', '🎀', '💝', '🔮', '📱', '💻',
+      '🌈', '☀️', '🌙', '⭐', '🌟', '🍀', '🌺', '🌸', '🌼', '🌻',
+      '❤️', '💖', '💗', '💓', '💕', '😊', '🥳', '🤔', '🤩', '😎',
+      '🎨', '🎭', '🎸', '🎺', '🎷', '🎻', '🎹', '🎼',
+      '✨', '💫', '🌟', '🔮', '🎭', '🧙‍♂️', '🦄', '🌈',
+      '💻', '📱', '💬', '📢', '🔍', '📈', '📊', '💡',
+      '🎉', '🎊', '🎈', '🎪', '🎯', '🎰', '🎲', '🎮',
+      '💯', '🔥', '💫', '✨', '⚡', '💥', '💢', '💦'
+    ];
+    return emojis[Math.floor(Math.random() * emojis.length)];
+};
 
 const ActivePoll = ({ poll_id }) => {
   const [pollData, setPollData] = useState(null);
   const [voted, setVoted] = useState(false);
   const [results, setResults] = useState({});
+  const [pollEmoji] = useState(getRandomEmoji());
 
   useEffect(() => {
     const fetchPollData = async () => {
@@ -114,6 +121,7 @@ const ActivePoll = ({ poll_id }) => {
   <View style={styles.maxWidthContainer}>
     <View style={styles.card}>
         <View style={styles.header}>
+          <Text style={styles.emoji}>{pollEmoji}</Text>
           <Text style={styles.title}>{title || 'Untitled Poll'}</Text>
         </View>
         <View style={styles.content}>
@@ -177,12 +185,15 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#541388',
     borderRadius: 16,
+    minHeight: Platform.OS === 'web' ? 400 : windowHeight * 0.6,
+    maxHeight: Platform.OS === 'web' ? 600 : windowHeight * 0.8,
     padding: 16,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
     elevation: 3,
+    justifyContent: 'center',
   },
   header: {
     alignItems: 'center',
@@ -200,6 +211,10 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: 10,
+  },
+  emoji: {
+    fontSize: 40,
+    textAlign: 'center',
   },
   optionButton: {
     width: '100%',

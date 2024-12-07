@@ -13,17 +13,8 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function FeedScreen() {
-<<<<<<< HEAD
-<<<<<<< HEAD
-    const [user, setUser] = useState(); 
-=======
-
     const[user, setUser] = useState(); 
     const[userId, setUserId] = useState();
->>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
-=======
-    const [user, setUser] = useState(); 
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
     const [question, setQuestion] = useState(''); 
     const [choices, setChoices] = useState(['','']);
     const [loading, setLoading] = useState(false);
@@ -31,21 +22,6 @@ export default function FeedScreen() {
     const [modalMessage, setModalMessage] = useState('');
     const [modalType, setModalType] = useState('');
 
-    const getUserFromStorage = async () => {
-        try {
-            const user = await AsyncStorage.getItem("@user");
-            if (user) {
-                console.log("User locally saved:", JSON.parse(user));
-                return JSON.parse(user);
-            } else {
-                console.log("No user found in AsyncStorage.");
-                return null;
-            }
-        } catch (error) {
-            console.error("Error getting user from AsyncStorage", error);
-            return null;
-        }
-    };
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -182,39 +158,15 @@ export default function FeedScreen() {
         let createdPollId = null;
         
         try {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
             // Create the poll first
->>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
-=======
-            // Create the poll first
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
             createdPollId = await createPoll();
             console.log('Created poll with ID:', createdPollId);
             
             try {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
                 const optionPromises = choices.map(choice => createOption(createdPollId, choice));
                 await Promise.all(optionPromises);
                 showModal("Poll Created Successfully!", 'success');
             } catch (optionError) {
-<<<<<<< HEAD
-=======
-                // Try to create all options
-                const optionPromises = choices.map(choice => createOption(createdPollId, choice));
-                await Promise.all(optionPromises);
-                alert("Poll Created Successfully!");
-                clearPoll();
-            } catch (optionError) {
-                // If option creation fails, delete the poll
->>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
-=======
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
                 console.error('Error creating options:', optionError);
                 
                 try {
@@ -234,24 +186,10 @@ export default function FeedScreen() {
                 } catch (deleteError) {
                     console.error('Error deleting poll:', deleteError);
                 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
                 showModal("Error creating poll options", 'error');
             }
         } catch (error) {
             showModal("Error creating poll: " + error.message, 'error');
-<<<<<<< HEAD
-=======
-                
-                throw optionError; 
-            }
-        } catch (error) {
-            alert("Error creating poll: " + error.message);
->>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
-=======
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
         } finally {
             setLoading(false);
         }
@@ -381,6 +319,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 20,
         borderBottomLeftRadius: 20,
     },
+    
     tabText: {
         fontFamily: 'LexendDeca',
         fontStyle: 'normal',
@@ -389,7 +328,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: 10,
+        paddingTop: 5,
     },
     fullPage: {
         flex: 1,

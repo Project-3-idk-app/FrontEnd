@@ -68,7 +68,7 @@ export default function UserScreen() {
                 <View style={styles.userInfo}>
                     {/* Small TODO: change this to a svg so it scales nicer on desktop, rn it scales bad */}
                     <Image source={require('@/assets/images/account_circle.png')} style={styles.image} />
-                    <ThemedText type="title">{user.username}</ThemedText>
+                    <ThemedText style={styles.title}type="title">{user.username}</ThemedText>
                 </View>
                 <View style={{ flex: 1, alignContent: 'flex-end', alignItems: 'flex-start', flexWrap: 'wrap'}}>
                     <Pressable
@@ -123,8 +123,15 @@ const styles = StyleSheet.create({
     fullPage: {
         flex: 1
     },
-    content: {
-
+    title:{
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
+        fontWeight: '400',
+        color: '#FFFFFF',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 5,
     },
     titleContainer: {
         flexDirection: 'row',
@@ -156,6 +163,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
+        fontFamily: 'LexendDeca'
     },
     image: {
         width: Platform.OS === "web" ? 100 : 50, 

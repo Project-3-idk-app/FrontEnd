@@ -17,15 +17,7 @@ export default function FeedScreen() {
       try {
         const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/polls/');
         const data = await response.json();
-<<<<<<< HEAD
-<<<<<<< HEAD
-        setPolls(data);
-=======
-        setPolls(data); // API now returns active polls directly
->>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
-=======
-        setPolls(data);
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
+        setPolls(data); // API returns active polls directly
         setLoading(false);
       } catch (error) {
         console.error('Error fetching polls:', error);
@@ -62,10 +54,6 @@ export default function FeedScreen() {
         ) : error ? (
           <Text style={styles.errorText}>{error}</Text>
         ) : (
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
           <FlatList
             data={polls}
             renderItem={renderPollItem}
@@ -80,24 +68,7 @@ export default function FeedScreen() {
             ListEmptyComponent={
               <Text style={styles.errorText}>No active polls available</Text>
             }
-<<<<<<< HEAD
-          />
-=======
-          <View style={styles.container}>
-            <FlatList
-              data={polls}
-              keyExtractor={(item) => item.poll_id.toString()}
-              renderItem={renderPollItem}
-              contentContainerStyle={styles.pollList}
-              ListEmptyComponent={
-                <Text style={styles.errorText}>No active polls available</Text>
-              }
-            />
-          </View>
->>>>>>> 32d88eccea8b09a03179add773ecea450cf42fd9
-=======
-          />    
->>>>>>> b36005f40cf0897bf1264728fd7be57eac49254a
+          />  
         )}
       </SafeAreaView>
     </ThemedView>
