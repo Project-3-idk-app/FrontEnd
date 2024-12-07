@@ -129,7 +129,7 @@ export default function FeedScreen() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ThemedView style={[styles.fullPage, { backgroundColor: '#FAF3E3' }]}>
+            <ThemedView style={styles.fullPage}>
                 <View style={styles.topTab}>
                     <View style={{flex: 1}}/>
                     <View style={styles.userInfo}>

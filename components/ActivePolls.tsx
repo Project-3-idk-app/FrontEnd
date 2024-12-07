@@ -1,11 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { ThemedText } from './ThemedText';
+
+// Get screen dimensions
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+  const getRandomEmoji = () => {
+    const emojis = [
+      '✨', '💫', '⭐', '🌟', '⚡', '🎵', '🎶', '🎪', '🎨', '🎭', '🎪',
+      '🎲', '🎮', '🎯', '🎳', '🎱', '🏆', '🎖️', '🎪', 
+      '💭', '💡', '📌', '🎈', '🎁', '🎀', '💝', '🔮', '📱', '💻',
+      '🌈', '☀️', '🌙', '⭐', '🌟', '🍀', '🌺', '🌸', '🌼', '🌻',
+      '❤️', '💖', '💗', '💓', '💕', '😊', '🥳', '🤔', '🤩', '😎',
+      '🎨', '🎭', '🎸', '🎺', '🎷', '🎻', '🎹', '🎼',
+      '✨', '💫', '🌟', '🔮', '🎭', '🧙‍♂️', '🦄', '🌈',
+      '💻', '📱', '💬', '📢', '🔍', '📈', '📊', '💡',
+      '🎉', '🎊', '🎈', '🎪', '🎯', '🎰', '🎲', '🎮',
+      '💯', '🔥', '💫', '✨', '⚡', '💥', '💢', '💦'
+    ];
+    return emojis[Math.floor(Math.random() * emojis.length)];
+};
 
 const ActivePoll = ({ poll_id }) => {
   const [pollData, setPollData] = useState(null);
   const [voted, setVoted] = useState(false);
   const [results, setResults] = useState({});
+  const [pollEmoji] = useState(getRandomEmoji());
 
   useEffect(() => {
     const fetchPollData = async () => {
@@ -96,86 +118,112 @@ const ActivePoll = ({ poll_id }) => {
   }
 
   return (
+  <View style={styles.maxWidthContainer}>
     <View style={styles.card}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{title || 'Untitled Poll'}</Text>
-      </View>
-      <View style={styles.content}>
-        {options.map((option) => (
-          <TouchableOpacity
-            key={option.option_id}
-            onPress={() => handleVote(option.option_text, option.option_id)}
-            disabled={voted}
-            style={[
-              styles.optionButton,
-              { 
-                backgroundColor: voted ? '#CB046B' : '#CB046B', 
-                opacity: voted ? 0.7 : 1 
-              }
-            ]}
-          >
-            <View style={styles.optionContent}>
-              <Text style={styles.optionText}>
-                {option.option_text}
+        <View style={styles.header}>
+          <Text style={styles.emoji}>{pollEmoji}</Text>
+          <Text style={styles.title}>{title || 'Untitled Poll'}</Text>
+        </View>
+        <View style={styles.content}>
+          {options.map((option) => (
+            <TouchableOpacity
+              key={option.option_id}
+              onPress={() => handleVote(option.option_text, option.option_id)}
+              disabled={voted}
+              style={[
+                styles.optionButton,
+                { 
+                  backgroundColor: voted ? '#CB046B' : '#CB046B', 
+                  opacity: voted ? 0.7 : 1 
+                }
+              ]}
+            >
+              <View style={styles.optionContent}>
+                <Text style={styles.optionText}>
+                  {option.option_text}
+                  {voted && (
+                    <Text style={styles.percentageText}>
+                      {` (${Math.round(
+                        (results[option.option_text] / totalVotes) * 100 || 0
+                      )}%)`}
+                    </Text>
+                  )}
+                </Text>
                 {voted && (
-                  <Text style={styles.percentageText}>
-                    {` (${Math.round(
-                      (results[option.option_text] / totalVotes) * 100 || 0
-                    )}%)`}
-                  </Text>
+                  <View
+                    style={[
+                      styles.votedOverlay,
+                      { 
+                        width: `${(results[option.option_text] / totalVotes) * 100 || 0}%`,
+                      }
+                    ]}
+                  />
                 )}
-              </Text>
-              {voted && (
-                <View
-                  style={[
-                    styles.votedOverlay,
-                    { 
-                      width: `${(results[option.option_text] / totalVotes) * 100 || 0}%`,
-                    }
-                  ]}
-                />
-              )}
-            </View>
-          </TouchableOpacity>
-        ))}
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F1E9DA',
+  },
+  maxWidthContainer: {
     width: '100%',
-    maxWidth: 400,
+    maxWidth: Platform.select({
+      web: 600, 
+      android: '90%' 
+    }),
+  },
+  card: {
     backgroundColor: '#541388',
     borderRadius: 16,
+    minHeight: Platform.OS === 'web' ? 400 : windowHeight * 0.6,
+    maxHeight: Platform.OS === 'web' ? 600 : windowHeight * 0.8,
     padding: 16,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
     elevation: 3,
+    justifyContent: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   title: {
-    fontSize: 24,
+    fontSize: 25,
     color: 'white',
     textAlign: 'center',
     fontWeight: '500',
+    marginTop: 30,
+    marginBottom: 20,
+    fontFamily: 'LexendDeca',
+    fontStyle: 'normal',
   },
   content: {
-    gap: 12,
+    gap: 10,
+  },
+  emoji: {
+    fontSize: 40,
+    textAlign: 'center',
   },
   optionButton: {
     width: '100%',
-    padding: 16,
-    borderRadius: 12,
+    padding: 12,
+    borderRadius: 10,
     backgroundColor: '#CB046B',
     position: 'relative',
     overflow: 'hidden',
+    marginBottom: 10
   },
   optionContent: {
     zIndex: 10,
@@ -184,10 +232,12 @@ const styles = StyleSheet.create({
   optionText: {
     color: 'white',
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 14,
+    fontFamily: 'LexendDeca',
+    fontStyle: 'normal',
   },
   percentageText: {
-    fontSize: 14,
+    fontSize: 12,
   },
   votedOverlay: {
     position: 'absolute',
