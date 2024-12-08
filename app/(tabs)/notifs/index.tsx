@@ -20,7 +20,7 @@ export default function FeedScreen() {
     const fetchFriendRequests = async (userId) => {
         let temp = [];
         try{
-            // TODO: get the requests that are pending to send them to the top
+            // TODO: get the requests that are pending
 
         } catch (error) {
             console.error("notifs friendFetch: ", error);
@@ -87,7 +87,7 @@ export default function FeedScreen() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ThemedView style={[styles.fullPage, { backgroundColor: '#FAF3E3' }]}>
+            <ThemedView style={styles.fullPage}>
                 <View style={styles.topTab}>
                     <View style={{flex: 1}}/>
                     <View style={styles.userInfo}>
@@ -101,7 +101,9 @@ export default function FeedScreen() {
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
                 <View>
                     {friendRequests.length > 0 ? (
-                        friendRequests.map((request) => (
+                        friendRequests
+                            .filter((request) => request.user_id1 !== currentUser.id)
+                            .map((request) => (
                             <FriendRequestComponent
                                 key={request.id}
                                 friend={request}

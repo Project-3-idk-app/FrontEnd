@@ -1,4 +1,4 @@
-import { Animated, StatusBar, StyleSheet, View, Text, TextInput, Pressable, TouchableOpacity, Image, FlatList, Alert, Modal, Platform } from 'react-native';
+import { Animated, StatusBar, StyleSheet, View, Text, TextInput, Pressable, TouchableOpacity, Image, FlatList, Alert, Modal, Platform, Button } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react'
@@ -66,13 +66,14 @@ export default function AddFriend() {
 
     const searchUser = async () => {
         setHasResults(true);
-        let data = await searchUsersArray(username);
+        let data = await searchUsersArray(username.trim());
         if (data.length == 0) {
             setHasResults(false);
             return
         }
         setUserList(data);
     };
+
     const handleAddFriend = async (id: string) => {
         console.log(`Add friend request sent to user ID: ${id}`);
         if (user.id != '-1') {

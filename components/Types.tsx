@@ -181,13 +181,22 @@ export const fakeCurrent = [
     },
 ];
 
+export enum friendStatus {
+    SENT = 0,
+    PENDING = 1,
+    FRIENDS = 2,
+    // Likely not going to get used
+    BLOCKED = 3,
+
+}
+
 // Fake friend data
 export const fakeFriendRequests = [
     {
         id: 1,
         userId: 101,
         username: 'JustNekoChris',
-        status: 'pending',
+        status: friendStatus.PENDING,
         created_at: '2024-03-25T10:30:00Z',
         profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=JustNekoChris'
     },
@@ -195,7 +204,7 @@ export const fakeFriendRequests = [
         id: 2,
         userId: 102,
         username: 'DaSpeedSta',
-        status: 'pending',
+        status: friendStatus.PENDING,
         created_at: '2024-03-24T15:45:00Z',
         profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DaSpeedSta'
     },
@@ -203,7 +212,7 @@ export const fakeFriendRequests = [
         id: 3,
         userId: 103,
         username: 'HappyFunBuns',
-        status: 'pending',
+        status: friendStatus.PENDING,
         created_at: '2024-03-24T09:20:00Z',
         profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=HappyFunBuns'
     },
@@ -211,7 +220,7 @@ export const fakeFriendRequests = [
         id: 4,
         userId: 104,
         username: 'Chgunz',
-        status: 'pending',
+        status: friendStatus.PENDING,
         created_at: '2024-03-23T18:15:00Z',
         profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=GamingPro'
     },
@@ -219,7 +228,7 @@ export const fakeFriendRequests = [
         id: 5,
         userId: 105,
         username: 'FrogWizard',
-        status: 'pending',
+        status: friendStatus.PENDING,
         created_at: '2024-03-23T14:10:00Z',
         profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frog'
     }

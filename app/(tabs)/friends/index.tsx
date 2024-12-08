@@ -8,11 +8,14 @@ import { useNavigation } from 'expo-router';
 import {fakeuser } from '@/components/Types';
 import { useFonts } from 'expo-font';
 import FriendComponent from '@/components/Friend';
+import { getUserFriends, getUserInfoDb } from '@/components/DataBaseFuncs';
 
 export default function FeedScreen() {
     const navigator = useNavigation();
     const [user, setUser] = useState(fakeuser);
-    const [friends, setFriends] = useState([]);
+    // This has the API response, which contains the keys of users
+    const [friends, setFriends] = useState({friendInfo: [], profiles: [] });
+    // This has the username, and pfp of who their friends are
     const [fontsLoaded] = useFonts({
         'LexendDeca': require('@/assets/fonts/LexendDecaRegular.ttf'), 
       });
@@ -38,11 +41,28 @@ useEffect(() => {
         const user = await getUserFromStorage();
         if (user) {
             setUser(user);
-            setFriends([
-                { id: 1, username: 'JustNekoChris' },
-                { id: 2, username: 'DaSpeedSta' },
-                { id: 3, username: 'HappyFunBuns' },
-            ]);
+            try{
+                let data = {
+                    friendInfo: [],
+                    profiles: []
+                }
+                // TODO: add the pending friendrequests to the start of this array
+                let existingFriends = await getUserFriends(user.id);
+                if (existingFriends) {
+                    data.friendInfo = data.friendInfo.concat(existingFriends);
+                    for(let i of existingFriends) {
+                        let profile = await getUserInfoDb(i.user_id2);
+                        data.profiles.push(profile);
+                    }
+                    console.log('friends: we got back', data);
+                    setFriends(data);
+                    console.log('friend list is ', friends);
+                }
+            } catch (error) {
+                console.log('friends: Error', error);
+                setFriends({ friendInfo: [], profiles: [] });
+            }
+
         }
     };
 
@@ -79,13 +99,19 @@ const handleAddFriend = () => {
                     </View>
             
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-                {friends.map((friend) => (
-                    <FriendComponent
-                        key={friend.id}
-                        friend={friend}
-                        onUnfollow={handleUnfollow}
-                    />
-                ))}
+                {friends && friends.profiles.length > 0 ?
+                    friends.profiles.map((friend) => (
+                        <FriendComponent
+                            key={friend.id}
+                            friend={friend}
+                            onUnfollow={handleUnfollow}
+                        />
+                    )) :
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                            <ThemedText>You have no friends, invite some to the app!</ThemedText>
+                            <Button onPress={() => navigator.replace('index')} title='Refresh'/>
+                    </View>
+                }
             </ScrollView>
         </ThemedView>
     </SafeAreaView>

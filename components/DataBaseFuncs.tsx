@@ -202,3 +202,28 @@ export const sendFriendRequest = async (sender: string, reciever: string) => {
     }
 };
 
+
+
+export const getUserFriends = async (user: string) => {
+    console.log("user to check friends", user);
+    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/getfriends/${user}/`;
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        console.log('getUserData:', data);
+        if (data.error) {
+            console.error('Error:', data.error);
+            return null;
+        }
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
