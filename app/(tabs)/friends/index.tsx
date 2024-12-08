@@ -109,9 +109,11 @@ const handleAddFriend = () => {
                     )) :
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
                             <ThemedText>You have no friends, invite some to the app!</ThemedText>
-                            <Button onPress={() => navigator.replace('index')} title='Refresh'/>
                     </View>
                 }
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <Button onPress={() => navigator.replace('index')} title='Refresh' />
+                </View>
             </ScrollView>
         </ThemedView>
     </SafeAreaView>
