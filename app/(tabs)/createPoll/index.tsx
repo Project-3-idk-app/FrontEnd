@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Dimensions, Platform, Image, StatusBar, Modal, Button } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Dimensions, Platform, Image, StatusBar, Modal, Button, ScrollView } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ThemedView } from '@/components/ThemedView';
@@ -206,67 +206,72 @@ export default function FeedScreen() {
                     <View style={{ flex: 1, alignContent: 'flex-end', alignItems: 'flex-start', flexWrap: 'wrap'}}>
                     </View>
                 </View>
-                <View style={styles.rectangle13}>
-                    <TouchableOpacity onPress={clearPoll}>
-                        <Image source={require('@/assets/images/close_ring.png')} style={styles.crossIcon}></Image>
-                    </TouchableOpacity>
-                    <View style={styles.group1}>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={styles.askQuestion}
-                                placeholder="Ask a question ..."
-                                placeholderTextColor="#FFFFFF"
-                                value={question}
-                                onChangeText={setQuestion}
-                                multiline={true}
-                                maxLength={32}/>
-                        </View>
-                    
-                        <View style={styles.choicesContainer}>
-                            {choices.map((choice, index) => (
-                                <View key={index} style={styles.choiceContainer}>
-                                    <TextInput
-                                        style={[styles.choice, { flex: 1 }]}
-                                        placeholder={`Choice ${index + 1} ...`}
-                                        placeholderTextColor="#F1E9DA"
-                                        value={choice}
-                                        onChangeText={(text) => updateChoice(index, text)}
-                                        maxLength={32}
-                                    />
-                                    {choices.length > 2 && (
-                                        <TouchableOpacity 
-                                            style={styles.removeChoiceButton}
-                                            onPress={() => removeChoice(index)}
-                                        >
-                                            <Image 
-                                                source={require('@/assets/images/close_ring.png')} 
-                                                style={styles.removeChoiceIcon}
-                                            />
-                                        </TouchableOpacity>
-                                    )}
-                                </View>
-                            ))}
-                        </View>
-
-                        {choices.length < 4 && (
-                            <TouchableOpacity style={styles.addOptionContainer} onPress={addChoice}>
-                                <Image source={require('@/assets/images/Chat_plus.png')} style={styles.icon}></Image>
-                                <Text style={styles.addAnotherOption}>Add Another Option</Text>
+                <ScrollView>
+                    <View style={{flex: 1, alignItems:'center', justifyContent: 'center'}}>
+                        <View style={styles.rectangle13}>
+                            <TouchableOpacity onPress={clearPoll}>
+                                <Image source={require('@/assets/images/close_ring.png')} style={styles.crossIcon}></Image>
                             </TouchableOpacity>
-                        )}
+                            <View style={styles.group1}>
+                                <View style={styles.inputContainer}>
+                                    <TextInput
+                                        style={styles.askQuestion}
+                                        placeholder="Ask a question ..."
+                                        placeholderTextColor="#FFFFFF"
+                                        value={question}
+                                        onChangeText={setQuestion}
+                                        multiline={true}
+                                        maxLength={32}/>
+                                </View>
+                            
+                                <View style={styles.choicesContainer}>
+                                    {choices.map((choice, index) => (
+                                        <View key={index} style={styles.choiceContainer}>
+                                            <TextInput
+                                                style={[styles.choice, { flex: 1 }]}
+                                                placeholder={`Choice ${index + 1} ...`}
+                                                placeholderTextColor="#F1E9DA"
+                                                value={choice}
+                                                onChangeText={(text) => updateChoice(index, text)}
+                                                maxLength={32}
+                                            />
+                                            {choices.length > 2 && (
+                                                <TouchableOpacity 
+                                                    style={styles.removeChoiceButton}
+                                                    onPress={() => removeChoice(index)}
+                                                >
+                                                    <Image 
+                                                        source={require('@/assets/images/close_ring.png')} 
+                                                        style={styles.removeChoiceIcon}
+                                                    />
+                                                </TouchableOpacity>
+                                            )}
+                                        </View>
+                                    ))}
+                                </View>
 
-                        <Text style={styles.expires}>Expires in 24 hours</Text>
+                                {choices.length < 4 && (
+                                    <TouchableOpacity style={styles.addOptionContainer} onPress={addChoice}>
+                                        <Image source={require('@/assets/images/Chat_plus.png')} style={styles.icon}></Image>
+                                        <Text style={styles.addAnotherOption}>Add Another Option</Text>
+                                    </TouchableOpacity>
+                                )}
+
+                                <Text style={styles.expires}>Expires in 24 hours</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity style={styles.createPollButton} onPress={submitPoll}>
+                            <LinearGradient
+                                colors={['#541388', '#D90368']}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 0 }}
+                                style={styles.createPollButton}>
+                                <Text style={styles.createPollText}>Create Poll</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
                     </View>
-                </View>
-                <TouchableOpacity style={styles.createPollButton} onPress={submitPoll}>
-                    <LinearGradient
-                        colors={['#541388', '#D90368']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.createPollButton}>
-                        <Text style={styles.createPollText}>Create Poll</Text>
-                    </LinearGradient>
-                </TouchableOpacity>
+                </ScrollView>
+
             </ThemedView>
             <Modal
                 animationType="fade"

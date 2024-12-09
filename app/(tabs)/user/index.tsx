@@ -1,4 +1,4 @@
-import { Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -143,7 +143,12 @@ export default function UserScreen() {
                     <View style={{ display: 'flex', flex: 1, margin: 10}}/>
                 </View>
             </ScrollView>
-
+            <TouchableOpacity
+                style={styles.refreshButton}
+                onPress={() => navigator.replace('index')}
+            >
+                <Text style={styles.refreshButtonText}>Refresh</Text>
+            </TouchableOpacity>
             <Modal 
     animationType='fade'
     transparent={true} 
@@ -283,5 +288,24 @@ const styles = StyleSheet.create({
     },
     deleteButtonText: {
         color: 'white',
-    }
+    },
+    refreshButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontFamily: 'LexendDeca',
+        paddingVertical: 8,
+        paddingHorizontal: 5,
+        borderRadius: 20,
+        paddingRight: 20,
+        paddingLeft: 20,
+        marginTop: 15,
+        backgroundColor: '#0E7C7B',
+        marginRight: 20,
+        alignSelf: 'center',
+    },
+    refreshButtonText: {
+        color: '#FFFFFF',
+        fontFamily: 'LexendDeca',
+        fontSize: 14,
+    },
 });
