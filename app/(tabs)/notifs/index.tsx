@@ -1,27 +1,42 @@
-import { Platform, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import { Button, Platform, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
-import { fakeFriendRequests, fakeuser } from '@/components/Types';
+import { fakeFriendRequests, fakeuser, friendStatus, showAlert } from '@/components/Types';
 import FriendRequestComponent from '@/components/Request';
+import { acceptFriendRequest, getNotifications, getUserInfoDb, rejectFriendRequest } from '@/components/DataBaseFuncs';
+import { useNavigation } from 'expo-router';
 
 export default function FeedScreen() {
     const [currentUser, setCurrentUser] = useState(fakeuser);
-    const [friendRequests, setFriendRequests] = useState(fakeFriendRequests);
+    // requestInfo contains ids and status, profiles contains an array of type User
+    const [friendRequests, setFriendRequests] = useState({ requestInfo: [], profiles: [] });
     const [loading, setLoading] = useState(true);
-
-    const [fontsLoaded] = useFonts({
-        'LexendDeca': require('@/assets/fonts/LexendDecaRegular.ttf'),
-    });
+    const navigator = useNavigation();
 
     const fetchFriendRequests = async (userId) => {
-        let temp = [];
+        setLoading(true);
+        let temp = { requestInfo: [], profiles: [] };
+        console.log('we are in fetch friends');
         try{
             // TODO: get the requests that are pending
+            let data = await getNotifications(userId);
+            if (data) {
+                // need to filter pending requests
+                console.log('filtering');
+                const filteredData = data.filter(item => item.status === friendStatus.PENDING);
+                temp.requestInfo = filteredData
 
+                for(let i of filteredData) {
+                    let userInfo = await getUserInfoDb(i.user_id2);
+                    temp.profiles.push(userInfo);
+                }
+                setFriendRequests(temp);
+                console.log('notifs: friendRequests', friendRequests );
+            }
         } catch (error) {
             console.error("notifs friendFetch: ", error);
         }
@@ -30,22 +45,47 @@ export default function FeedScreen() {
     };
 
     const handleAcceptRequest = async (friendId : string) => {
-
-        // Remove the accepted request from the list
-        setFriendRequests(prev => 
-            prev.filter(request => request.userId !== friendId)
-        );
         console.log(`Accepted friend request from user ${friendId}`);
+
+        try{
+            // accept the friend request
+            let response = await acceptFriendRequest(currentUser.id, friendId);
+            // Remove the accepted request from the list
+            if (response){
+                let temp = friendRequests;
+                temp.requestInfo = temp.requestInfo.filter(item => item.user_id2 !== friendId);
+                temp.profiles = temp.profiles.filter(item => item.id !== friendId);
+                setFriendRequests(temp);
+                navigator.replace('index');
+            }
+        } catch (error) {
+            console.log('Error: ', error);
+            showAlert('Error', 'Error with accept, please refresh and try again');
+        }
+
     };
 
     const handleDeclineRequest = async (friendId) => {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
         // Remove the declined request from the list
-        setFriendRequests(prev => 
-            prev.filter(request => request.userId !== friendId)
-        );
+        console.log('predecline and it looks like', friendRequests);
+
+        try {
+            // delete the friend request
+            let response = await rejectFriendRequest(currentUser.id, friendId);
+            // Remove the accepted request from the list
+            if (response) {
+                let temp = friendRequests;
+                temp.requestInfo = temp.requestInfo.filter(item => item.user_id2 !== friendId);
+                temp.profiles = temp.profiles.filter(item => item.id !== friendId);
+                setFriendRequests(temp);
+                navigator.replace('index');
+
+            }
+        } catch (error) {
+            console.log('Error: ', error);
+            showAlert('Error', 'Error with accept, please refresh and try again');
+        }
+        console.log('declined and it looks like', friendRequests);
         console.log(`Declined friend request from user ${friendId}`);
     };
 
@@ -69,9 +109,6 @@ export default function FeedScreen() {
         };
         fetchUser();
     }, []);
-    if (!fontsLoaded) {
-        return null;
-    }
 
     if (loading) {
         return (
@@ -100,24 +137,25 @@ export default function FeedScreen() {
                 
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
                 <View>
-                    {friendRequests.length > 0 ? (
-                        friendRequests
-                            .filter((request) => request.user_id1 !== currentUser.id)
-                            .map((request) => (
+                {friendRequests.requestInfo.length > 0 ? (
+                        friendRequests.profiles.map((request) => (
                             <FriendRequestComponent
                                 key={request.id}
                                 friend={request}
-                                onAccept={() => handleAcceptRequest(request.userId)}
-                                onDecline={() => handleDeclineRequest(request.userId)}
+                                onAccept={() => handleAcceptRequest(request.id)}
+                                onDecline={() => handleDeclineRequest(request.id)}
                             />
                      ))
-                ) : (
-                <View style={styles.noRequestsContainer}>
-                    <ThemedText style={styles.noRequestsText}>
-                        No pending friend requests
-                    </ThemedText>
+                    ) : (
+                    <View style={styles.noRequestsContainer}>
+                        <ThemedText style={styles.noRequestsText}>
+                            No pending friend requests
+                        </ThemedText>
+                    </View>
+                )}
                 </View>
-            )}
+                <View style={{ justifyContent: 'center', alignItems: 'center', margin: 20 }}>
+                    <Button onPress={() => fetchFriendRequests(currentUser.id)} title='Refresh' />
                 </View>
             </ScrollView>
         </ThemedView>

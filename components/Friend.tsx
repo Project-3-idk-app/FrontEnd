@@ -11,17 +11,21 @@ const FriendComponent = ({friend, onUnfollow }) => {
   return (
     <View style={styles.container}>
     <View style={styles.maxWidthContainer}>
-      <View style={styles.friendContainer}>
-        <View style={styles.avatarContainer}>
-          <Image source={friend.picture} style={styles.avatar} />
-          <Text style={styles.username}>{friend.username}</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.unfollowButton}
-          onPress={() => onUnfollow(friend.id)}
-        >
-          <Text style={styles.unfollowText}>Unfollow</Text>
-        </TouchableOpacity>
+        <View style={friend.pending ? styles.pendingContainer : styles.friendContainer}>
+          <View style={styles.avatarContainer}>
+            <Image source={friend.picture} style={styles.avatar} />
+            <Text style={styles.username}>{friend.username}</Text>
+          </View>
+          {friend.pending ? 
+            <Text style={styles.unfollowText}>Friend Pending</Text> 
+            :
+            <TouchableOpacity
+            style={styles.unfollowButton}
+            onPress={() => onUnfollow(friend.id)}
+            >
+              <Text style={styles.unfollowText}>Unfollow</Text>
+            </TouchableOpacity>
+          }
       </View>
     </View>
   </View>
@@ -42,6 +46,15 @@ const styles = StyleSheet.create({
     }),
   },
   friendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#541388',
+    borderRadius: 8,
+    padding: 12,
+    marginVertical: 8,
+  },
+  pendingContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

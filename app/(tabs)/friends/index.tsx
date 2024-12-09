@@ -5,15 +5,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'expo-router';
-import {fakeuser } from '@/components/Types';
+import {fakeuser, friendStatus, showAlert } from '@/components/Types';
 import { useFonts } from 'expo-font';
 import FriendComponent from '@/components/Friend';
-import { getUserFriends, getUserInfoDb } from '@/components/DataBaseFuncs';
+import { deleteFriend, getNotifications, getUserFriends, getUserInfoDb } from '@/components/DataBaseFuncs';
 
 export default function FeedScreen() {
     const navigator = useNavigation();
     const [user, setUser] = useState(fakeuser);
-    // This has the API response, which contains the keys of users
+    // friendInfo contains ids and status, profiles contains an array of type User
     const [friends, setFriends] = useState({friendInfo: [], profiles: [] });
     // This has the username, and pfp of who their friends are
     const [fontsLoaded] = useFonts({
@@ -47,6 +47,19 @@ useEffect(() => {
                     profiles: []
                 }
                 // TODO: add the pending friendrequests to the start of this array
+                let notifs = await getNotifications(user.id);
+                if (notifs) {
+                    // need to filter pending requests
+                    console.log('filtering');
+                    const filteredData = notifs.filter(item => item.status === friendStatus.SENT);
+                    data.friendInfo = data.friendInfo.concat(filteredData);
+                    for (let i of filteredData) {
+                        let profile = await getUserInfoDb(i.user_id2);
+                        profile.pending = true;
+                        data.profiles.push(profile);
+                    }
+                }
+                // Get Friends that already exist
                 let existingFriends = await getUserFriends(user.id);
                 if (existingFriends) {
                     data.friendInfo = data.friendInfo.concat(existingFriends);
@@ -70,8 +83,16 @@ useEffect(() => {
     console.log(JSON.stringify(user, null, 2));
 }, []);
 
-const handleUnfollow = (friendId) => {
-    alert(`Unfollowing friend with ID:', ${friendId}`);
+const handleUnfollow = async (friendId) => {
+    try{
+        let data = await deleteFriend(user.id, friendId);
+        if(data){
+            navigator.replace('index');
+        }
+    } catch (error) {
+        console.log('friends: Error', error);
+        showAlert('Error', 'Error with removing friend');
+    }
 };
 
 const handleAddFriend = () => {

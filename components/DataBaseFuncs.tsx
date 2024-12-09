@@ -227,3 +227,106 @@ export const getUserFriends = async (user: string) => {
         return null;
     }
 };
+// Returns Pending as well as sent Requests.
+export const getNotifications = async (user: string) => {
+    console.log('getNotificationss: user is', user);
+    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/getnotifications/${user}/`
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        console.log('getNotifs:', data);
+        if (data.error) {
+            console.error('Error:', data.error);
+            return [];
+        }
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
+}
+
+export const acceptFriendRequest = async (id1: string, id2: string) => {
+    console.log("acceptFriendRequest: searching on", id1, id2);
+    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/acceptfriendrequest/${id1}/${id2}/`;
+    try {
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // body: JSON.stringify({
+                
+            // }),
+        });
+
+        const data = await response.json();
+        if (data.error) {
+            console.log('acceptFriendRequest: update not accepted');
+            return null;
+        }
+        console.log("acceptFriendRequest: returning ", data);
+        return data;
+    } catch (error) {
+        console.error('acceptFriendRequest: Error:', error);
+    }
+    return null;
+};
+export const rejectFriendRequest = async (id1: string, id2: string) => {
+    console.log("rejectFriendRequest: searching on", id1, id2);
+    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/rejectfriendrequest/${id1}/${id2}/`;
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // body: JSON.stringify({
+
+            // }),
+        });
+
+        const data = await response.json();
+        if (data.error) {
+            console.log('rejectFriendRequest: update not accepted');
+            return null;
+        }
+        console.log("rejectFriendRequest: returning ", data);
+        return data;
+    } catch (error) {
+        console.error('rejectFriendRequest: Error:', error);
+    }
+    return null;
+};
+export const deleteFriend = async (id1: string, id2: string) => {
+    console.log("deleteFriend: searching on", id1, id2);
+    const url = `https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/unfriend/${id1}/${id2}/`;
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            // body: JSON.stringify({
+
+            // }),
+        });
+
+        const data = await response.json();
+        if (data.error) {
+            console.log('deleteFriend: update not accepted');
+            return null;
+        }
+        console.log("deleteFriend: returning ", data);
+        return data;
+    } catch (error) {
+        console.error('deleteFriend: Error:', error);
+    }
+    return null;
+};

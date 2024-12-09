@@ -182,12 +182,11 @@ export const fakeCurrent = [
 ];
 
 export enum friendStatus {
-    SENT = 0,
-    PENDING = 1,
+    PENDING = 0,
+    SENT = 1,
     FRIENDS = 2,
     // Likely not going to get used
     BLOCKED = 3,
-
 }
 
 // Fake friend data

@@ -9,7 +9,7 @@ const FriendRequestComponent = ({ friend, onAccept, onDecline }) => {
                 <View style={styles.container}>
                     <View style={styles.content}>
                         <Image 
-                            source={{ uri: friend.profilePicture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + friend.username }} 
+                            source={{ uri: friend.picture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + friend.username }} 
                             style={styles.avatar}
                         />
                         <ThemedText style={styles.text}>
