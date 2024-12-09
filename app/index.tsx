@@ -154,16 +154,6 @@ export default function HomeScreen() {
       </View>
         {/* Google Button */}
         {Component}
-        {/* Fake User Sign in for dev purposes */}
-        <View style={styles.debugButtonContainer}>
-          <TouchableOpacity
-            style={styles.debugButton}
-            onPress={() => fakeSignIn()}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.googleButtonText}>Debug Sign in</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
       </LinearGradient>
     </SafeAreaView>
   );
