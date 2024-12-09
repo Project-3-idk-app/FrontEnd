@@ -4,20 +4,49 @@ import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IdkLogo from '@/components/Logo';
 import ActivePoll from '@/components/ActivePolls';
+import { fakeuser } from '@/components/Types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function FeedScreen() {
+  const [user, setUser] = useState(fakeuser);
   const [polls, setPolls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const getUserFromStorage = async () => {
+    try {
+        const user = await AsyncStorage.getItem("@user");
+        if (user) {
+            console.log("User locally saved:", JSON.parse(user));
+            return JSON.parse(user);
+        } else {
+            console.log("No user found in AsyncStorage.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error getting user from AsyncStorage", error);
+        return null; 
+    }
+};
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getUserFromStorage();
+      if (user) {
+          setUser(user);
+          console.log("User ID:", user.id);
+      }
+  };
+  fetchUser();
     const fetchPolls = async () => {
       try {
-        const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/polls/');
+        const response = await fetch(`https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/polls/${user.id}/`);
         const data = await response.json();
-        setPolls(data); // API returns active polls directly
+        const activeUnvotedPolls = data.polls.filter(poll => 
+          !poll.options.some(option => option.user === user.id) && poll.user !== user.id
+        );
+        setPolls(activeUnvotedPolls); // API returns active polls directly
         setLoading(false);
       } catch (error) {
         console.error('Error fetching polls:', error);
@@ -25,13 +54,12 @@ export default function FeedScreen() {
         setLoading(false);
       }
     };
-
     fetchPolls();
   }, []);
 
   const renderPollItem = ({ item }) => (
     <View style={styles.pollContainer}>
-      <ActivePoll poll_id={item.poll_id} />
+      <ActivePoll poll_id={item.poll_id} pollData={item} userId={user.id}/>
     </View>
   );
 
@@ -104,5 +132,7 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 32,
+    fontFamily: 'LexendDeca',
+    fontSize: 20, 
   },
 });

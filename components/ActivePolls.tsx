@@ -2,73 +2,75 @@ import React, { useState, useEffect } from 'react';
 
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { ThemedText } from './ThemedText';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fakeuser } from './Types';
 
 // Get screen dimensions
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-  const getRandomEmoji = () => {
-    const emojis = [
-      '✨', '💫', '⭐', '🌟', '⚡', '🎵', '🎶', '🎪', '🎨', '🎭', '🎪',
-      '🎲', '🎮', '🎯', '🎳', '🎱', '🏆', '🎖️', '🎪', 
-      '💭', '💡', '📌', '🎈', '🎁', '🎀', '💝', '🔮', '📱', '💻',
-      '🌈', '☀️', '🌙', '⭐', '🌟', '🍀', '🌺', '🌸', '🌼', '🌻',
-      '❤️', '💖', '💗', '💓', '💕', '😊', '🥳', '🤔', '🤩', '😎',
-      '🎨', '🎭', '🎸', '🎺', '🎷', '🎻', '🎹', '🎼',
-      '✨', '💫', '🌟', '🔮', '🎭', '🧙‍♂️', '🦄', '🌈',
-      '💻', '📱', '💬', '📢', '🔍', '📈', '📊', '💡',
-      '🎉', '🎊', '🎈', '🎪', '🎯', '🎰', '🎲', '🎮',
-      '💯', '🔥', '💫', '✨', '⚡', '💥', '💢', '💦'
-    ];
-    return emojis[Math.floor(Math.random() * emojis.length)];
+const getRandomEmoji = () => {
+  const emojis = [
+    '✨', '💫', '⭐', '🌟', '⚡', '🎵', '🎶', '🎪', '🎨', '🎭', '🎪',
+    '🎲', '🎮', '🎯', '🎳', '🎱', '🏆', '🎖️', '🎪', 
+    '💭', '💡', '📌', '🎈', '🎁', '🎀', '💝', '🔮', '📱', '💻',
+    '🌈', '☀️', '🌙', '⭐', '🌟', '🍀', '🌺', '🌸', '🌼', '🌻',
+    '❤️', '💖', '💗', '💓', '💕', '😊', '🥳', '🤔', '🤩', '😎',
+    '🎨', '🎭', '🎸', '🎺', '🎷', '🎻', '🎹', '🎼',
+    '✨', '💫', '🌟', '🔮', '🎭', '🧙‍♂️', '🦄', '🌈',
+    '💻', '📱', '💬', '📢', '🔍', '📈', '📊', '💡',
+    '🎉', '🎊', '🎈', '🎪', '🎯', '🎰', '🎲', '🎮',
+    '💯', '🔥', '💫', '✨', '⚡', '💥', '💢', '💦'
+  ];
+  return emojis[Math.floor(Math.random() * emojis.length)];
 };
 
-const ActivePoll = ({ poll_id }) => {
-  const [pollData, setPollData] = useState(null);
+const getUserFromStorage = async () => {
+  try {
+      const user = await AsyncStorage.getItem("@user");
+      if (user) {
+          console.log("User locally saved:", JSON.parse(user));
+          return JSON.parse(user);
+      } else {
+          console.log("No user found in AsyncStorage.");
+          return null;
+      }
+  } catch (error) {
+      console.error("Error getting user from AsyncStorage", error);
+      return null; 
+  }
+};
+
+const ActivePoll = ({ poll_id, pollData, userId }) => {
   const [voted, setVoted] = useState(false);
   const [results, setResults] = useState({});
   const [pollEmoji] = useState(getRandomEmoji());
 
   useEffect(() => {
-    const fetchPollData = async () => {
-      try {
-        const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/');
-        const data = await response.json();
-
-        // Find the specific poll
-        const poll = data.polls.find(p => p.poll_id === poll_id);
-        
-        // Find options for this specific poll
-        const pollOptions = data.options.filter(option => option.poll === poll_id);
-
-        if (poll) {
-          // Combine poll and options
-          const fullPollData = {
-            ...poll,
-            options: pollOptions
-          };
-
-          setPollData(fullPollData);
-
-          // Initialize results based on options
-          const initialResults = {};
-          pollOptions.forEach((option) => {
-            initialResults[option.option_text] = 0;
-          });
-          setResults(initialResults);
-        }
-      } catch (error) {
-        console.error('Error fetching poll data:', error);
+    if(pollData?.options){
+      // Check if the user has already voted on this specific poll
+      const hasVoted = pollData.options.some(option => option.user === userId
+      );
+      
+      if (hasVoted) {
+        setVoted(true);
       }
-    };
-
-    if (poll_id) {
-      fetchPollData();
+  
+      const initialResults = {};
+      pollData.options.forEach((option) => {
+        initialResults[option.option_text] = option.votes; 
+      });
+      setResults(initialResults);
     }
-  }, [poll_id]);
+  }, [pollData, userId]);
 
   const handleVote = async (optionText, optionId) => {
     if (!voted && poll_id) {
+      console.log('Vote Payload:', {
+        poll: poll_id,
+        option: optionId,
+        user: userId
+      });
       try {
         // Simulate vote on the front end (update local results)
         setResults((prev) => ({
@@ -78,7 +80,6 @@ const ActivePoll = ({ poll_id }) => {
         setVoted(true);
   
         // Send vote to the backend
-        const userId = "2"; // replace this with the actual logged in user's ID
         const response = await fetch('https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/create/vote/', {
           method: 'POST',
           headers: {
