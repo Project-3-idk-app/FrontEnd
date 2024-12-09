@@ -85,7 +85,10 @@ export default function UserScreen() {
                 <View style={{flex: 1}}/>
                 <View style={styles.userInfo}>
                     {/* Small TODO: change this to a svg so it scales nicer on desktop, rn it scales bad */}
-                    <Image source={require('@/assets/images/account_circle.png')} style={styles.image} />
+                    <Image
+                        source={{ uri: user.picture || require('@/assets/images/account_circle.png') }}
+                        style={styles.userImage}
+                    />
                     <ThemedText style={styles.title}type="title">{user.username}</ThemedText>
                 </View>
                 <View style={{ flex: 1, alignContent: 'flex-end', alignItems: 'flex-start', flexWrap: 'wrap'}}>
@@ -108,9 +111,9 @@ export default function UserScreen() {
             <ScrollView contentContainerStyle={{ flexGrow: 1}} style={{flex:1}}>
                 {polls && (
                     <>
-                        <ThemedText type="subtitle">Active Polls</ThemedText>
+                        <ThemedText style={styles.subtitle} type="subtitle">Active Polls</ThemedText>
                         <PollScroll polls={polls.polls_active} onButtonPress={openModal}/>
-                        <ThemedText type="subtitle">Completed Polls</ThemedText>
+                        <ThemedText style={styles.subtitle} type="subtitle">Completed Polls</ThemedText>
                         <PollScroll polls={polls.polls_inactive} onButtonPress={openModal} />
                     </>
                 )} 
@@ -120,16 +123,13 @@ export default function UserScreen() {
                     </View>
                 )}
                 {loading && (
-                    <View style={{ marginVertical: 20, alignContent: 'center'}}>
+                    <View style={{ marginVertical: 20, alignSelf: 'center'}}>
                         <ThemedText type="defaultSemiBold">Loading...</ThemedText>
                     </View>
                 )}
 
                 <View style={{flexDirection:'row', justifyContent: 'center', alignItems: 'center'}}>
                     <View style={{ display: 'flex', flex: 1, margin: 10 }}/>
-                    <View style={{ display: 'flex', flex: 1, margin: 10 }}>
-                        <Button title='Sign Out' onPress={() => signout()} color={'red'} />
-                    </View>
                     <View style={{ display: 'flex', flex: 1, margin: 10}}/>
                 </View>
             </ScrollView>
@@ -164,6 +164,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingTop: 5,
+    },
+    userImage: {
+        width: 46,
+        height: 46,
+        borderRadius: 23,
+        marginRight: 10,
+    },
+    subtitle:{
+        marginLeft: 10,
+        marginTop: 10
     },
     titleContainer: {
         flexDirection: 'row',

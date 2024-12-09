@@ -1,4 +1,4 @@
-import { Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -111,12 +111,12 @@ const handleAddFriend = () => {
                 <View style={{ flex: 1, alignContent: 'flex-end', alignItems: 'flex-start', flexWrap: 'wrap'}}/>
             </View>
             <View style={styles.addButtonContainer}>
-                        <Pressable
+                        <TouchableOpacity
                             style={styles.addButton}
                             onPress={() => navigator.navigate('addFriend')}
                         >
                             <Text style={styles.addButtonText}>+ Add Friend</Text>
-                        </Pressable>
+                        </TouchableOpacity>
                     </View>
             
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
@@ -129,12 +129,16 @@ const handleAddFriend = () => {
                         />
                     )) :
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                            <ThemedText>You have no friends, invite some to the app!</ThemedText>
+                            <ThemedText style={styles.noFriendsText}>You have no friends, invite some to the app!</ThemedText>
                     </View>
                 }
-                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <Button onPress={() => navigator.replace('index')} title='Refresh' />
-                </View>
+                
+                <TouchableOpacity
+                    style={styles.refreshButton}
+                    onPress={() => navigator.replace('index')}
+                    >
+                    <Text style={styles.addButtonText}>Refresh</Text>
+                </TouchableOpacity>
             </ScrollView>
         </ThemedView>
     </SafeAreaView>
@@ -144,6 +148,23 @@ const handleAddFriend = () => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
+    },
+    noFriendsText:{
+        fontSize: 17
+    },
+    refreshButton:{
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        fontFamily: 'LexendDeca',
+        paddingVertical: 8,
+        paddingHorizontal: 5,
+        borderRadius: 20,
+        paddingRight:20,
+        paddingLeft: 20,
+        marginTop: 15,
+        backgroundColor: '#0E7C7B',
+        marginRight: 20,
+        alignSelf: 'center',
     },
     fullPage: {
         flex: 1,

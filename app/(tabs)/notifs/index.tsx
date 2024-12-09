@@ -1,4 +1,4 @@
-import { Button, Platform, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import { Button, Platform, ScrollView, StatusBar, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -154,9 +154,12 @@ export default function FeedScreen() {
                     </View>
                 )}
                 </View>
-                <View style={{ justifyContent: 'center', alignItems: 'center', margin: 20 }}>
-                    <Button onPress={() => fetchFriendRequests(currentUser.id)} title='Refresh' />
-                </View>
+                <TouchableOpacity
+                    style={styles.refreshButton}
+                    onPress={() => navigator.replace('index')}
+                    >
+                    <Text style={styles.refreshButtonText}>Refresh</Text>
+                </TouchableOpacity>
             </ScrollView>
         </ThemedView>
     </SafeAreaView>
@@ -169,6 +172,25 @@ const styles = StyleSheet.create({
     },
     fullPage: {
         flex: 1,
+    },
+    refreshButton:{
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        fontFamily: 'LexendDeca',
+        paddingVertical: 8,
+        paddingHorizontal: 5,
+        borderRadius: 20,
+        paddingRight:20,
+        paddingLeft: 20,
+        marginTop: 15,
+        backgroundColor: '#0E7C7B',
+        marginRight: 20,
+        alignSelf: 'center',
+    },
+    refreshButtonText: {
+        color: '#FFFFFF',
+        fontFamily: 'LexendDeca',
+        fontSize: 14,
     },
     topTab: {
         backgroundColor: "#541388",
@@ -219,8 +241,7 @@ const styles = StyleSheet.create({
         paddingTop: 40,
     },
     noRequestsText: {
-        fontSize: 16,
-        color: '#666',
+        fontSize: 17,
         fontFamily: 'LexendDeca',
     },
     allSeenText: {

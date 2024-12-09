@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontFamily: 'LexendDeca',
     fontStyle: 'normal',
+    fontSize: 18,
   },
   unfollowButton: {
     backgroundColor: '#333',
@@ -98,6 +99,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'LexendDeca',
     fontStyle: 'normal',
+    fontSize: 16,
   },
 });
 
