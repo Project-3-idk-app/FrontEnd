@@ -15,6 +15,7 @@ export default function UserScreen() {
     const [currentPollId, setPollId] = useState(-1);
     const [polls, setPolls] = useState<{ polls_active: any[], polls_inactive: any[] } | null>(null);
     const [loading, setLoading] = useState(true);
+    
 
     const getUserFromStorage = async () => {
         try {
@@ -32,15 +33,23 @@ export default function UserScreen() {
         }
     };
 
-    // Signs User out by clearing the async storage of their info, navigates home
-    const signout = async () => {
+    const deletePoll = async (pollId: number) => {
         try {
-            await AsyncStorage.removeItem("@user");
-            navigator.getParent()?.replace('index');
-        } catch {
-            console.log("Error with signing out");
+            const response = await fetch(`https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/delete/poll/${pollId}/`, {
+                method: 'DELETE',
+            });
+            
+            if (response.ok) {
+                closeModal();
+                navigator.replace('index');
+            } else {
+                console.error('Failed to delete poll');
+            }
+        } catch (error) {
+            console.error('Error deleting poll:', error);
         }
-    }
+    };
+
 
     // When screen is focused on, get User information
     useEffect(() => {
@@ -134,19 +143,32 @@ export default function UserScreen() {
                 </View>
             </ScrollView>
 
-            <Modal
-                animationType='fade'
-                transparent={true} 
-                visible={modalVisible}
-                onRequestClose={closeModal} 
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalText}>Current Poll ID is {currentPollId} </Text>
-                        <Button title="Close" onPress={closeModal} />
-                    </View>
-                </View>
-            </Modal>
+            <Modal 
+    animationType='fade'
+    transparent={true} 
+    visible={modalVisible}
+    onRequestClose={closeModal}
+>
+    <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Are you sure you want to delete this poll?</Text>
+            <View style={styles.modalButtons}>
+                <Pressable
+                    style={[styles.modalButton, styles.deleteButton]}
+                    onPress={() => deletePoll(currentPollId)}
+                >
+                    <Text style={[styles.buttonText, styles.deleteButtonText]}>Delete</Text>
+                </Pressable>
+                <Pressable
+                    style={[styles.modalButton, styles.cancelButton]}
+                    onPress={closeModal}
+                >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                </Pressable>
+            </View>
+        </View>
+    </View>
+</Modal>
         </ThemedView>
     );
 }
@@ -219,10 +241,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', 
     },
     modalContent: {
-        width: 300,
+        width: 400,
         padding: 20,
         backgroundColor: '#fff',
         borderRadius: 10,
@@ -231,5 +253,34 @@ const styles = StyleSheet.create({
     modalText: {
         fontSize: 18,
         marginBottom: 20,
+        textAlign: 'center',
+        fontFamily:'LexendDeca'
     },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 15,
+        width: '100%',
+        marginTop: 5,
+    },
+    modalButton: {
+        padding: 10,
+        borderRadius: 5,
+        minWidth: 100,
+        alignItems: 'center',
+    },
+    cancelButton: {
+        backgroundColor: '#E0E0E0',  
+    },
+    deleteButton: {
+        backgroundColor: '#FF3B30',  
+    },
+    buttonText: {
+        fontSize: 16,
+        fontWeight: '500',
+        fontFamily:'LexendDeca'
+    },
+    deleteButtonText: {
+        color: 'white',
+    }
 });
