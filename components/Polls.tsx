@@ -13,7 +13,7 @@ const PollCard: React.FC<PollCardProps> = ({ poll, onButtonPress }) => {
     return (
         <View style={styles.card}>
             <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-                <Text style={styles.cardTitle}>{poll.title}</Text>
+                <Text style={styles.cardTitle}>{poll.pollTitle}</Text>
                 <Pressable onPress={() => onButtonPress(poll.pollId)} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center' }}>
                         <Image source={require('@/assets/images/close_ring.png')} style={styles.image} />
@@ -21,11 +21,14 @@ const PollCard: React.FC<PollCardProps> = ({ poll, onButtonPress }) => {
                 </Pressable>
             </View>
             {poll.options.map((option, index) => {
-                const percentage = (option.optionVoteNum / poll.totalVotes) * 100;
-                const friendPercent = (option.friendVoteNum / poll.totalFriendVotes) * 100;
+                let percentage = (option.votes / poll.pollVotes) * 100;
+                if (poll.pollVotes === 0) {
+                    percentage = 0.0;
+                }
+                // const friendPercent = (option.friendVoteNum / poll.pollVotes) * 100;
                 return (
                     <View key={index} style={styles.optionContainer}>
-                        <Text style={styles.optionTitle}>{option.optionTitle}</Text>
+                        <Text style={styles.optionTitle}>{option.option}</Text>
                         <View style={styles.barBackground}>
                             <View
                                 style={[
@@ -36,7 +39,7 @@ const PollCard: React.FC<PollCardProps> = ({ poll, onButtonPress }) => {
                                     },
                                 ]}
                             />
-                            <View
+                            {/* <View
                                 style={[
                                     styles.bar,
                                     {
@@ -45,14 +48,14 @@ const PollCard: React.FC<PollCardProps> = ({ poll, onButtonPress }) => {
                                         marginVertical: 5
                                     },
                                 ]}
-                            />
+                            /> */}
                         </View>
                         <Text style={styles.optionVoteText}>{`${percentage.toFixed(
                             1
                         )}%`}</Text>
-                        <Text style={styles.optionFriend}>{`${friendPercent.toFixed(
+                        {/* <Text style={styles.optionFriend}>{`${friendPercent.toFixed(
                             1
-                        )}%`}</Text>
+                        )}%`}</Text> */}
                     </View>
                 );
             })}
