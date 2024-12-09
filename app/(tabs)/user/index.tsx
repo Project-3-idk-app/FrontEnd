@@ -115,7 +115,7 @@ export default function UserScreen() {
                     </>
                 )} 
                 {!polls && !loading &&(
-                    <View style={{ marginVertical: 20, alignContent: 'center'}}>
+                    <View style={{ marginVertical: 20, alignItems: 'center' }}>
                         <ThemedText type="defaultSemiBold">A whole lot of nothing, get to making polls!</ThemedText>
                     </View>
                 )}
