@@ -9,6 +9,12 @@ import { fakeuser } from './Types';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
+// Function to generate different colors for bars
+const getBarColor = (index: number) => {
+  const colors = ['#4CAF50', '#FF9800', '#F44336', '#2196F3'];
+  return colors[index % colors.length];
+};
+
 const getRandomEmoji = () => {
   const emojis = [
     '✨', '💫', '⭐', '🌟', '⚡', '🎵', '🎶', '🎪', '🎨', '🎭', '🎪',
@@ -126,7 +132,7 @@ const ActivePoll = ({ poll_id, pollData, userId }) => {
           <Text style={styles.title}>{title || 'Untitled Poll'}</Text>
         </View>
         <View style={styles.content}>
-          {options.map((option) => (
+          {options.map((option, index) => (
             <TouchableOpacity
               key={option.option_id}
               onPress={() => handleVote(option.option_text, option.option_id)}
@@ -156,6 +162,7 @@ const ActivePoll = ({ poll_id, pollData, userId }) => {
                       styles.votedOverlay,
                       { 
                         width: `${(results[option.option_text] / totalVotes) * 100 || 0}%`,
+                        backgroundColor: getBarColor(index)
                       }
                     ]}
                   />
@@ -245,8 +252,8 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: '#900048',
-    opacity: 0.3,
+    backgroundColor: 'white',
+    opacity: 0.7,
     zIndex: 1,
   },
 });

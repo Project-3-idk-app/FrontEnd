@@ -37,16 +37,12 @@ export default function FeedScreen() {
           setUser(user);
           console.log("User ID:", user.id);
       }
-  };
-  fetchUser();
+
     const fetchPolls = async () => {
       try {
         const response = await fetch(`https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/polls/${user.id}/`);
         const data = await response.json();
-        const activeUnvotedPolls = data.polls.filter(poll => 
-          !poll.options.some(option => option.user === user.id) && poll.user !== user.id
-        );
-        setPolls(activeUnvotedPolls); // API returns active polls directly
+        setPolls(data.polls); // API returns active polls directly
         setLoading(false);
       } catch (error) {
         console.error('Error fetching polls:', error);
@@ -55,6 +51,8 @@ export default function FeedScreen() {
       }
     };
     fetchPolls();
+  };
+    fetchUser();
   }, []);
 
   const renderPollItem = ({ item }) => (
