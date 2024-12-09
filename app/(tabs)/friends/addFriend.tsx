@@ -18,7 +18,6 @@ export default function AddFriend() {
     const [user, setUser] = useState(fakeuser);
     const [modalVisible, setModalVisible] = useState(false);
 
-
     // When screen is focused on, get User information
     useEffect(() => {
         const fetchUser = async () => {

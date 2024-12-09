@@ -9,6 +9,7 @@ import { fakeConcluded, fakeCurrent, fakeuser } from '@/components/Types';
 import PollScroll from '@/components/Polls';
 
 export default function UserScreen() {
+    const DEFAULT_PROFILE_IMAGE = require('@/assets/images/account_circle.png');
     const navigator = useNavigation();
     const [user, setUser] = useState(fakeuser);
     const [modalVisible, setModalVisible] = useState(false);
@@ -95,7 +96,7 @@ export default function UserScreen() {
                 <View style={styles.userInfo}>
                     {/* Small TODO: change this to a svg so it scales nicer on desktop, rn it scales bad */}
                     <Image
-                        source={{ uri: user.picture || require('@/assets/images/account_circle.png') }}
+                        source={user.picture ? { uri: user.picture } : DEFAULT_PROFILE_IMAGE}
                         style={styles.userImage}
                     />
                     <ThemedText style={styles.title}type="title">{user.username}</ThemedText>
