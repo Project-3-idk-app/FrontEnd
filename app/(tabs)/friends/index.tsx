@@ -113,7 +113,7 @@ const handleAddFriend = () => {
             <View style={styles.addButtonContainer}>
                         <Pressable
                             style={styles.addButton}
-                            onPress={handleAddFriend}
+                            onPress={() => navigator.navigate('addFriend')}
                         >
                             <Text style={styles.addButtonText}>+ Add Friend</Text>
                         </Pressable>
@@ -186,9 +186,9 @@ const styles = StyleSheet.create({
     },
     addButtonContainer: {
         alignItems: 'flex-end',
+        marginBottom: 18,
     },
     addButton: {
-        backgroundColor: '#FF0A78',
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 20,

@@ -13,6 +13,8 @@ export default function UserScreen() {
     const [user, setUser] = useState(fakeuser);
     const [modalVisible, setModalVisible] = useState(false);
     const [currentPollId, setPollId] = useState(-1);
+    const [polls, setPolls] = useState<{ polls_active: any[], polls_inactive: any[] } | null>(null);
+    const [loading, setLoading] = useState(true);
 
     const getUserFromStorage = async () => {
         try {
@@ -47,10 +49,26 @@ export default function UserScreen() {
             if (user) {
                 setUser(user);
             }
+            const fetchPolls = async () => {
+                setLoading(true);
+                try {
+                    const response = await fetch(`https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/userpolls/${user.id}`);
+                    const data = await response.json();
+                    setPolls(data); // API now returns active polls directly
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching polls:', error);
+                    setLoading(false);
+                }
+            };
+      
+            fetchPolls();
         };
 
         fetchUser();
         console.log(JSON.stringify(user, null, 2));
+
+        
     }, []);
 
     const closeModal = () => {
@@ -68,7 +86,7 @@ export default function UserScreen() {
                 <View style={styles.userInfo}>
                     {/* Small TODO: change this to a svg so it scales nicer on desktop, rn it scales bad */}
                     <Image source={require('@/assets/images/account_circle.png')} style={styles.image} />
-                    <ThemedText type="title">{user.username}</ThemedText>
+                    <ThemedText style={styles.title}type="title">{user.username}</ThemedText>
                 </View>
                 <View style={{ flex: 1, alignContent: 'flex-end', alignItems: 'flex-start', flexWrap: 'wrap'}}>
                     <Pressable
@@ -87,11 +105,25 @@ export default function UserScreen() {
                 </View>
             </View>
 
-            <ScrollView contentContainerStyle={{ flexGrow: 1, margin: 20}} style={{flex:1}}>
-                <ThemedText type="subtitle">Active Polls()</ThemedText>
-                <PollScroll polls={fakeCurrent} onButtonPress={openModal}/>
-                <ThemedText type="subtitle">Completed Polls()</ThemedText>
-                <PollScroll polls={fakeConcluded} onButtonPress={openModal} />
+            <ScrollView contentContainerStyle={{ flexGrow: 1}} style={{flex:1}}>
+                {polls && (
+                    <>
+                        <ThemedText type="subtitle">Active Polls</ThemedText>
+                        <PollScroll polls={polls.polls_active} onButtonPress={openModal}/>
+                        <ThemedText type="subtitle">Completed Polls</ThemedText>
+                        <PollScroll polls={polls.polls_inactive} onButtonPress={openModal} />
+                    </>
+                )} 
+                {!polls && !loading &&(
+                    <View style={{ marginVertical: 20, alignItems: 'center' }}>
+                        <ThemedText type="defaultSemiBold">A whole lot of nothing, get to making polls!</ThemedText>
+                    </View>
+                )}
+                {loading && (
+                    <View style={{ marginVertical: 20, alignContent: 'center'}}>
+                        <ThemedText type="defaultSemiBold">Loading...</ThemedText>
+                    </View>
+                )}
 
                 <View style={{flexDirection:'row', justifyContent: 'center', alignItems: 'center'}}>
                     <View style={{ display: 'flex', flex: 1, margin: 10 }}/>
@@ -123,8 +155,15 @@ const styles = StyleSheet.create({
     fullPage: {
         flex: 1
     },
-    content: {
-
+    title:{
+        fontFamily: 'LexendDeca',
+        fontStyle: 'normal',
+        fontWeight: '400',
+        color: '#FFFFFF',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 5,
     },
     titleContainer: {
         flexDirection: 'row',
@@ -156,6 +195,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
+        fontFamily: 'LexendDeca'
     },
     image: {
         width: Platform.OS === "web" ? 100 : 50, 

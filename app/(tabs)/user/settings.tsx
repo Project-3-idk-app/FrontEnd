@@ -100,24 +100,21 @@ export default function UserScreen() {
         }
     } 
 
-
-
     return (
         <ThemedView style={styles.fullPage}>
             <View style={styles.topTab}>
-                <TouchableOpacity
-                    onPress={() => navigator.navigate('index')}
-                    style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={28} color="white" />
-                </TouchableOpacity>
-                <View style={styles.titleContainer}>
-                    <Text style={styles.tabText}>Add a Friend</Text>
+                    <TouchableOpacity 
+                        onPress={() => navigator.navigate('index')}
+                        style={styles.backButton}>
+                        <Ionicons name="arrow-back" size={28} color="white" />
+                    </TouchableOpacity>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.tabText}>Edit Profile</Text>
+                    </View>
+                    <View style={styles.backButton} />
                 </View>
-                <View style={styles.backButton} />
-            </View>
 
             <View style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column', marginTop: 10}}>
-                <ThemedText style={{fontSize: 36, lineHeight:50, fontFamily: 'LexendDeca'}}>Edit Profile</ThemedText>
                 <View style={styles.card}>
                     <View>
                         <Text style={styles.label}>Username:</Text>
@@ -196,14 +193,15 @@ export default function UserScreen() {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalText}>Are You sure you want to delete your account?</Text>
+                        <Text style={styles.modalText}>Are you sure you want to delete your account?</Text>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
                             <View style={{ flex: 3 }}>
+                                <Button title="Delete" onPress={onDelete} color={'red'} />
                                 <Button title="No" onPress={closeModal} color={'grey'} />
                             </View>
                             <View style={{flex: 1}}/>
                             <View style={{ flex: 3 }}>
-                                <Button title="Delete" onPress={onDelete} color={'red'} />
+                                <Button title="No" onPress={closeModal} color={'grey'} />
                             </View>
 
                         </View>
@@ -234,9 +232,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
     },
+    tabText: {
+        fontFamily: 'LexendDeca',
+        fontSize: 30,
+        color: '#FFFFFF',
+        textAlign: 'center',
+        paddingVertical: 10,
+    },
+    titleContainer: {
+        flex: 4,
+        alignItems: 'center',
+    },
     image: {
         width: Platform.OS === "web" ? 100 : 50,
         height: Platform.OS === "web" ? 100 : 50,
+    },
+    backButton: {
+        padding: 10,
+        flex: 1,
     },
     modalOverlay: {
         flex: 1,
