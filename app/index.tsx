@@ -62,11 +62,6 @@ export default function HomeScreen() {
     }
   }
 
-  const fakeSignIn = async () => {
-    await AsyncStorage.setItem("@user", JSON.stringify(fakeuser));
-    await handleSignInWithGoogle();
-  }
-
   const getGoogleInfo = async (token: string | undefined) => {
     if(!token) return;
     console.log("attempting to fetch");
