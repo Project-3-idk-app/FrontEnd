@@ -21,7 +21,10 @@ const PollCard: React.FC<PollCardProps> = ({ poll, onButtonPress }) => {
                 </Pressable>
             </View>
             {poll.options.map((option, index) => {
-                const percentage = (option.votes / poll.pollVotes) * 100;
+                let percentage = (option.votes / poll.pollVotes) * 100;
+                if (poll.pollVotes === 0) {
+                    percentage = 0.0;
+                }
                 // const friendPercent = (option.friendVoteNum / poll.pollVotes) * 100;
                 return (
                     <View key={index} style={styles.optionContainer}>

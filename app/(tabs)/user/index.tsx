@@ -50,26 +50,27 @@ export default function UserScreen() {
             if (user) {
                 setUser(user);
             }
+            const fetchPolls = async () => {
+                setLoading(true);
+                try {
+                    const response = await fetch(`https://thawing-reef-69338-bd2a9c51eb3e.herokuapp.com/userpolls/${user.id}`);
+                    const data = await response.json();
+                    setPolls(data); // API now returns active polls directly
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching polls:', error);
+                    setError('Error fetching polls: ' + (error.message || 'Unknown error'));
+                    setLoading(false);
+                }
+            };
+      
+            fetchPolls();
         };
 
         fetchUser();
         console.log(JSON.stringify(user, null, 2));
 
-        const fetchPolls = async () => {
-            setLoading(true);
-            try {
-              const response = await fetch(`http://127.0.0.1:8000//userpolls/${user.id}`);
-              const data = await response.json();
-              setPolls(data); // API now returns active polls directly
-              setLoading(false);
-            } catch (error) {
-              console.error('Error fetching polls:', error);
-              setError('Error fetching polls: ' + (error.message || 'Unknown error'));
-              setLoading(false);
-            }
-        };
-      
-        fetchPolls();
+        
     }, []);
 
     const closeModal = () => {
