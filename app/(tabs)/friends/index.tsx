@@ -5,14 +5,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'expo-router';
-import {fakeuser } from '@/components/Types';
+import {fakeuser, friendStatus, showAlert } from '@/components/Types';
 import { useFonts } from 'expo-font';
 import FriendComponent from '@/components/Friend';
+import { deleteFriend, getNotifications, getUserFriends, getUserInfoDb } from '@/components/DataBaseFuncs';
 
 export default function FeedScreen() {
     const navigator = useNavigation();
     const [user, setUser] = useState(fakeuser);
-    const [friends, setFriends] = useState([]);
+    // friendInfo contains ids and status, profiles contains an array of type User
+    const [friends, setFriends] = useState({friendInfo: [], profiles: [] });
+    // This has the username, and pfp of who their friends are
     const [fontsLoaded] = useFonts({
         'LexendDeca': require('@/assets/fonts/LexendDecaRegular.ttf'), 
       });
@@ -38,11 +41,41 @@ useEffect(() => {
         const user = await getUserFromStorage();
         if (user) {
             setUser(user);
-            setFriends([
-                { id: 1, username: 'JustNekoChris' },
-                { id: 2, username: 'DaSpeedSta' },
-                { id: 3, username: 'HappyFunBuns' },
-            ]);
+            try{
+                let data = {
+                    friendInfo: [],
+                    profiles: []
+                }
+                // TODO: add the pending friendrequests to the start of this array
+                let notifs = await getNotifications(user.id);
+                if (notifs) {
+                    // need to filter pending requests
+                    console.log('filtering');
+                    const filteredData = notifs.filter(item => item.status === friendStatus.SENT);
+                    data.friendInfo = data.friendInfo.concat(filteredData);
+                    for (let i of filteredData) {
+                        let profile = await getUserInfoDb(i.user_id2);
+                        profile.pending = true;
+                        data.profiles.push(profile);
+                    }
+                }
+                // Get Friends that already exist
+                let existingFriends = await getUserFriends(user.id);
+                if (existingFriends) {
+                    data.friendInfo = data.friendInfo.concat(existingFriends);
+                    for(let i of existingFriends) {
+                        let profile = await getUserInfoDb(i.user_id2);
+                        data.profiles.push(profile);
+                    }
+                    console.log('friends: we got back', data);
+                    setFriends(data);
+                    console.log('friend list is ', friends);
+                }
+            } catch (error) {
+                console.log('friends: Error', error);
+                setFriends({ friendInfo: [], profiles: [] });
+            }
+
         }
     };
 
@@ -50,8 +83,20 @@ useEffect(() => {
     console.log(JSON.stringify(user, null, 2));
 }, []);
 
-const handleUnfollow = (friendId) => {
-    alert(`Unfollowing friend with ID:', ${friendId}`);
+const handleUnfollow = async (friendId) => {
+    try{
+        let data = await deleteFriend(user.id, friendId);
+        if(data){
+            navigator.replace('index');
+        }
+    } catch (error) {
+        console.log('friends: Error', error);
+        showAlert('Error', 'Error with removing friend');
+    }
+};
+
+const handleAddFriend = () => {
+    navigator.navigate('addFriend');
 };
 
     return (
@@ -75,13 +120,21 @@ const handleUnfollow = (friendId) => {
                     </View>
             
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-                {friends.map((friend) => (
-                    <FriendComponent
-                        key={friend.id}
-                        friend={friend}
-                        onUnfollow={handleUnfollow}
-                    />
-                ))}
+                {friends && friends.profiles.length > 0 ?
+                    friends.profiles.map((friend) => (
+                        <FriendComponent
+                            key={friend.id}
+                            friend={friend}
+                            onUnfollow={handleUnfollow}
+                        />
+                    )) :
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                            <ThemedText>You have no friends, invite some to the app!</ThemedText>
+                    </View>
+                }
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <Button onPress={() => navigator.replace('index')} title='Refresh' />
+                </View>
             </ScrollView>
         </ThemedView>
     </SafeAreaView>

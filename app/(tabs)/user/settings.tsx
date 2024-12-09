@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'expo-router';
-import { fakeConcluded, fakeCurrent, fakeuser } from '@/components/Types';
+import { fakeConcluded, fakeCurrent, fakeuser, showAlert } from '@/components/Types';
 import PollScroll from '@/components/Polls';
 import { deleteAccount, searchUsersBool, updateUser } from '@/components/DataBaseFuncs';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -30,14 +30,6 @@ export default function UserScreen() {
         } catch (error) {
             console.error("Error getting user from AsyncStorage", error);
             return null;
-        }
-    };
-
-    const showAlert = (title, message) => {
-        if (Platform.OS === 'web') {
-            alert(`${title}: ${message}`);
-        } else {
-            Alert.alert(title, message);
         }
     };
 
@@ -151,7 +143,7 @@ export default function UserScreen() {
                                     backgroundColor: pressed ? '#796edb' : '#665DB7', // Change color on press
                                     padding: 10,
                                     borderRadius: 25,
-                                    width: '40%',
+                                    width: '55%',
                                     alignItems: 'center',
                                     margin: 10,
                                 },
@@ -166,7 +158,7 @@ export default function UserScreen() {
                                     backgroundColor: pressed ? '#2e3959' : '#1E253A', // Change color on press
                                     padding: 10,
                                     borderRadius: 25,
-                                    width: '40%',
+                                    width: '55%',
                                     alignItems: 'center',
                                 },
                             ]}
@@ -303,5 +295,20 @@ const styles = StyleSheet.create({
         fontFamily: 'LexendDeca',
         color: 'white',
         margin: 5,
-    }
+    },
+    titleContainer: {
+        flex: 4,
+        alignItems: 'center',
+    },
+    backButton: {
+        padding: 10,
+        flex: 1,
+    },
+    tabText: {
+        fontFamily: 'LexendDeca',
+        fontSize: 30,
+        color: '#FFFFFF',
+        textAlign: 'center',
+        paddingVertical: 10,
+    },
 });

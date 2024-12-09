@@ -1,119 +1,114 @@
-import { Platform, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import { Button, Platform, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
-import { fakeuser } from '@/components/Types';
+import { fakeFriendRequests, fakeuser, friendStatus, showAlert } from '@/components/Types';
 import FriendRequestComponent from '@/components/Request';
-
-// Fake friend data
-const fakeFriendRequests = [
-    {
-        id: 1,
-        userId: 101,
-        username: 'JustNekoChris',
-        status: 'pending',
-        created_at: '2024-03-25T10:30:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=JustNekoChris'
-    },
-    {
-        id: 2,
-        userId: 102,
-        username: 'DaSpeedSta',
-        status: 'pending',
-        created_at: '2024-03-24T15:45:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DaSpeedSta'
-    },
-    {
-        id: 3,
-        userId: 103,
-        username: 'HappyFunBuns',
-        status: 'pending',
-        created_at: '2024-03-24T09:20:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=HappyFunBuns'
-    },
-    {
-        id: 4,
-        userId: 104,
-        username: 'Chgunz',
-        status: 'pending',
-        created_at: '2024-03-23T18:15:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=GamingPro'
-    },
-    {
-        id: 5,
-        userId: 105,
-        username: 'FrogWizard',
-        status: 'pending',
-        created_at: '2024-03-23T14:10:00Z',
-        profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frog'
-    }
-];
+import { acceptFriendRequest, getNotifications, getUserInfoDb, rejectFriendRequest } from '@/components/DataBaseFuncs';
+import { useNavigation } from 'expo-router';
 
 export default function FeedScreen() {
     const [currentUser, setCurrentUser] = useState(fakeuser);
-    const [friendRequests, setFriendRequests] = useState([]);
+    // requestInfo contains ids and status, profiles contains an array of type User
+    const [friendRequests, setFriendRequests] = useState({ requestInfo: [], profiles: [] });
     const [loading, setLoading] = useState(true);
-
-    const [fontsLoaded] = useFonts({
-        'LexendDeca': require('@/assets/fonts/LexendDecaRegular.ttf'),
-    });
-
-    const getUserFromStorage = async () => {
-        try {
-            const userStr = await AsyncStorage.getItem("@user");
-            if (userStr) {
-                return JSON.parse(userStr);
-            }
-            return null;
-        } catch (error) {
-            console.error("Error getting user from AsyncStorage:", error);
-            return null;
-        }
-    };
+    const navigator = useNavigation();
 
     const fetchFriendRequests = async (userId) => {
-        setFriendRequests(fakeFriendRequests);
+        setLoading(true);
+        let temp = { requestInfo: [], profiles: [] };
+        console.log('we are in fetch friends');
+        try{
+            // TODO: get the requests that are pending
+            let data = await getNotifications(userId);
+            if (data) {
+                // need to filter pending requests
+                console.log('filtering');
+                const filteredData = data.filter(item => item.status === friendStatus.PENDING);
+                temp.requestInfo = filteredData
+
+                for(let i of filteredData) {
+                    let userInfo = await getUserInfoDb(i.user_id2);
+                    temp.profiles.push(userInfo);
+                }
+                setFriendRequests(temp);
+                console.log('notifs: friendRequests', friendRequests );
+            }
+        } catch (error) {
+            console.error("notifs friendFetch: ", error);
+        }
+
         setLoading(false);
     };
 
-    const handleAcceptRequest = async (friendId) => {
-
-        // Remove the accepted request from the list
-        setFriendRequests(prev => 
-            prev.filter(request => request.userId !== friendId)
-        );
+    const handleAcceptRequest = async (friendId : string) => {
         console.log(`Accepted friend request from user ${friendId}`);
+
+        try{
+            // accept the friend request
+            let response = await acceptFriendRequest(currentUser.id, friendId);
+            // Remove the accepted request from the list
+            if (response){
+                let temp = friendRequests;
+                temp.requestInfo = temp.requestInfo.filter(item => item.user_id2 !== friendId);
+                temp.profiles = temp.profiles.filter(item => item.id !== friendId);
+                setFriendRequests(temp);
+                navigator.replace('index');
+            }
+        } catch (error) {
+            console.log('Error: ', error);
+            showAlert('Error', 'Error with accept, please refresh and try again');
+        }
+
     };
 
     const handleDeclineRequest = async (friendId) => {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
         // Remove the declined request from the list
-        setFriendRequests(prev => 
-            prev.filter(request => request.userId !== friendId)
-        );
+        console.log('predecline and it looks like', friendRequests);
+
+        try {
+            // delete the friend request
+            let response = await rejectFriendRequest(currentUser.id, friendId);
+            // Remove the accepted request from the list
+            if (response) {
+                let temp = friendRequests;
+                temp.requestInfo = temp.requestInfo.filter(item => item.user_id2 !== friendId);
+                temp.profiles = temp.profiles.filter(item => item.id !== friendId);
+                setFriendRequests(temp);
+                navigator.replace('index');
+
+            }
+        } catch (error) {
+            console.log('Error: ', error);
+            showAlert('Error', 'Error with accept, please refresh and try again');
+        }
+        console.log('declined and it looks like', friendRequests);
         console.log(`Declined friend request from user ${friendId}`);
     };
 
+    // When screen is focused on, get User information
     useEffect(() => {
-        const initialize = async () => {
-            const user = await getUserFromStorage();
-            if (user) {
-                setCurrentUser(user);
+        const fetchUser = async () => {
+            try {
+                const data = await AsyncStorage.getItem("@user");
+                const userObj = JSON.parse(data);
+                if (userObj) {
+                    setCurrentUser(userObj);
+                    console.log("notifs: current User: ", currentUser);
+                    await fetchFriendRequests(userObj.id);
+                }
+            } catch (error) {
+                let temp = currentUser;
+                temp.id = '-1'
+                setCurrentUser(temp);
+                console.error("Error getting user from AsyncStorage", error);
             }
-            await fetchFriendRequests();
         };
-
-        initialize();
+        fetchUser();
     }, []);
-
-    if (!fontsLoaded) {
-        return null;
-    }
 
     if (loading) {
         return (
@@ -142,22 +137,25 @@ export default function FeedScreen() {
                 
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
                 <View>
-                    {friendRequests.length > 0 ? (
-                        friendRequests.map((request) => (
+                {friendRequests.requestInfo.length > 0 ? (
+                        friendRequests.profiles.map((request) => (
                             <FriendRequestComponent
                                 key={request.id}
                                 friend={request}
-                                onAccept={() => handleAcceptRequest(request.userId)}
-                                onDecline={() => handleDeclineRequest(request.userId)}
+                                onAccept={() => handleAcceptRequest(request.id)}
+                                onDecline={() => handleDeclineRequest(request.id)}
                             />
                      ))
-                ) : (
-                <View style={styles.noRequestsContainer}>
-                    <ThemedText style={styles.noRequestsText}>
-                        No pending friend requests
-                    </ThemedText>
+                    ) : (
+                    <View style={styles.noRequestsContainer}>
+                        <ThemedText style={styles.noRequestsText}>
+                            No pending friend requests
+                        </ThemedText>
+                    </View>
+                )}
                 </View>
-            )}
+                <View style={{ justifyContent: 'center', alignItems: 'center', margin: 20 }}>
+                    <Button onPress={() => fetchFriendRequests(currentUser.id)} title='Refresh' />
                 </View>
             </ScrollView>
         </ThemedView>

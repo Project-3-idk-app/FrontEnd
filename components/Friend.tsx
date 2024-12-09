@@ -1,25 +1,31 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Image } from 'react-native';
 
+//export type User = {
+// id: string;
+// username: string;
+// email: string;
+// picture: string;
+// }
 const FriendComponent = ({friend, onUnfollow }) => {
   return (
     <View style={styles.container}>
     <View style={styles.maxWidthContainer}>
-      <View style={styles.friendContainer}>
-        <View style={styles.avatarContainer}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {friend.username[0].toUpperCase()}
-            </Text>
+        <View style={friend.pending ? styles.pendingContainer : styles.friendContainer}>
+          <View style={styles.avatarContainer}>
+            <Image source={friend.picture} style={styles.avatar} />
+            <Text style={styles.username}>{friend.username}</Text>
           </View>
-          <Text style={styles.username}>{friend.username}</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.unfollowButton}
-          onPress={() => onUnfollow(friend.id)}
-        >
-          <Text style={styles.unfollowText}>Unfollow</Text>
-        </TouchableOpacity>
+          {friend.pending ? 
+            <Text style={styles.unfollowText}>Friend Pending</Text> 
+            :
+            <TouchableOpacity
+            style={styles.unfollowButton}
+            onPress={() => onUnfollow(friend.id)}
+            >
+              <Text style={styles.unfollowText}>Unfollow</Text>
+            </TouchableOpacity>
+          }
       </View>
     </View>
   </View>
@@ -43,6 +49,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: '#541388',
+    borderRadius: 8,
+    padding: 12,
+    marginVertical: 8,
+  },
+  pendingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#CB046B',
     borderRadius: 8,
     padding: 12,
@@ -55,7 +70,6 @@ const styles = StyleSheet.create({
   avatar: {
     width: 32,
     height: 32,
-    backgroundColor: '#f2f2f2',
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
