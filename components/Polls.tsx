@@ -1,64 +1,49 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, Platform, Pressable } from 'react-native';
-import {Poll, } from '@/components/Types'
+import { Poll } from '@/components/Types';
 
-// Properties you pass in, onButtonPress is a function from (tabs)/user/index.tsx
 type PollCardProps = {
     poll: Poll,
     onButtonPress: (pollId: number) => void;
 };
 
-// Used In User to horizontally scroll polls.
 const PollCard: React.FC<PollCardProps> = ({ poll, onButtonPress }) => {
+    const cardHeight = poll.options.length === 2 ? 200 : poll.options.length === 3 ? 250 : 300;
     return (
-        <View style={styles.card}>
-            <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-                <Text style={styles.cardTitle}>{poll.pollTitle}</Text>
-                <Pressable onPress={() => onButtonPress(poll.pollId)} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center' }}>
-                        <Image source={require('@/assets/images/close_ring.png')} style={styles.image} />
-                    </View>
+        <View style={[styles.card, {height:cardHeight}]}>
+            <View style={{ position: 'relative' }}>
+                <Pressable onPress={() => onButtonPress(poll.pollId)} style={styles.closeButton}>
+                    <Image source={require('@/assets/images/close_ring.png')} style={styles.image} />
                 </Pressable>
+                <Text style={styles.cardTitle}>{poll.pollTitle}</Text>
             </View>
+            <View style={styles.allOptions}>
             {poll.options.map((option, index) => {
                 let percentage = (option.votes / poll.pollVotes) * 100;
                 if (poll.pollVotes === 0) {
                     percentage = 0.0;
                 }
-                // const friendPercent = (option.friendVoteNum / poll.pollVotes) * 100;
                 return (
                     <View key={index} style={styles.optionContainer}>
                         <Text style={styles.optionTitle}>{option.option}</Text>
-                        <View style={styles.barBackground}>
-                            <View
-                                style={[
-                                    styles.bar,
-                                    {
-                                        width: `${percentage}%`,
-                                        backgroundColor: getBarColor(index),
-                                    },
-                                ]}
-                            />
-                            {/* <View
-                                style={[
-                                    styles.bar,
-                                    {
-                                        width: `${friendPercent}%`,
-                                        backgroundColor: '#CB046B',
-                                        marginVertical: 5
-                                    },
-                                ]}
-                            /> */}
+                        <View style={styles.barContainer}>
+                            <View style={styles.barBackground}>
+                                <View
+                                    style={[
+                                        styles.bar,
+                                        {
+                                            width: `${percentage}%`,
+                                            backgroundColor: getBarColor(index),
+                                        },
+                                    ]}
+                                />
+                            </View>
+                            <Text style={styles.optionVoteText}>{`${percentage.toFixed(1)}%`}</Text>
                         </View>
-                        <Text style={styles.optionVoteText}>{`${percentage.toFixed(
-                            1
-                        )}%`}</Text>
-                        {/* <Text style={styles.optionFriend}>{`${friendPercent.toFixed(
-                            1
-                        )}%`}</Text> */}
                     </View>
                 );
             })}
+            </View>
         </View>
     );
 };
@@ -69,11 +54,11 @@ const getBarColor = (index: number) => {
     return colors[index % colors.length];
 };
 
-export const PollScroll: React.FC<{ polls: Poll[], onButtonPress:(pollId: number) => void }> = ({ polls, onButtonPress}) => {
+export const PollScroll: React.FC<{ polls: Poll[], onButtonPress: (pollId: number) => void }> = ({ polls, onButtonPress }) => {
     return (
         <ScrollView horizontal contentContainerStyle={styles.scrollView}>
             {polls.map((poll) => (
-                <PollCard key={poll.pollId} poll={poll} onButtonPress={onButtonPress}/>
+                <PollCard key={poll.pollId} poll={poll} onButtonPress={onButtonPress} />
             ))}
         </ScrollView>
     );
@@ -95,28 +80,47 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 6,
         elevation: 4,
-
+        flexDirection: 'column',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: -10,
+        right: -10,
+        zIndex: 1,
+    },
+    allOptions:{
+        alignItems:'center'
     },
     cardTitle: {
-        flex: 8,
-        flexWrap: 'wrap',
+        flex: 1,  
         fontSize: 18,
         marginBottom: 10,
-        color: "#FFF",
-        fontFamily: 'LexendDeca'
+        color: "#FFF",  
+        fontFamily: 'LexendDeca',
+        flexWrap: 'wrap',  
+    },
+    
+    optionTitle: {
+        fontSize: 15,
+        marginBottom: 5,
+        color: "#FFF", 
+        fontFamily: 'LexendDeca',
+        flexWrap: 'wrap',  
     },
     optionContainer: {
+        flexDirection: 'column',
         marginBottom: 25,
+        width: '100%',
     },
-    optionTitle: {
-        fontSize: 16,
-        marginBottom: 5,
-        color: "#FFF",
-        fontFamily: 'LexendDeca'
+    
+    barContainer: {
+        flexDirection: 'row', 
+        alignItems: 'center',  
+        width: '100%',  
     },
     barBackground: {
         height: 12,
-        width: '100%',
+        width: '80%',  
         backgroundColor: '#541388',
         borderRadius: 5,
     },
@@ -125,27 +129,16 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     optionVoteText: {
-        position: 'absolute',
-        right: 10,
         fontSize: 15,
-        color: "#FFF",
-        fontFamily: 'LexendDeca'
-    },
-    optionFriend: {
-        position: 'absolute',
-        right: 10,
-        fontSize: 15,
-        top: 30,
         color: "#FFF",
         fontFamily: 'LexendDeca',
-        backgroundColor: '#CB046B',
-        padding: 3,
-        borderRadius: 10
+        marginLeft: 10, 
+        width: '20%', 
     },
     image: {
-        width: Platform.OS === "web" ? 50 : 40,
-        height: Platform.OS === "web" ? 50 : 40,
-    }
+        width: Platform.OS === "web" ? 30 : 40,
+        height: Platform.OS === "web" ? 30 : 40,
+    },
 });
 
 export default PollScroll;

@@ -18,7 +18,6 @@ export default function AddFriend() {
     const [user, setUser] = useState(fakeuser);
     const [modalVisible, setModalVisible] = useState(false);
 
-
     // When screen is focused on, get User information
     useEffect(() => {
         const fetchUser = async () => {
@@ -207,7 +206,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         marginTop: 20,
         marginBottom: 10,
+        width: '70%',
+        alignSelf:'center',
         gap: 10,
+      
     },
     inputWrapper: {
         flex: 1,
@@ -222,6 +224,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#FFFFFF',
         width: '100%',
+        fontFamily: 'LexendDeca',
     },
     searchButton: {
         paddingHorizontal: 20,
@@ -233,10 +236,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#FFFFFF',
         textAlign: 'center',
+        fontFamily: 'LexendDeca',
     },
     list: {
         padding: 16,
         width: '100%',
+        
     },
     userContainer: {
         flexDirection: 'row',
@@ -249,6 +254,12 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 5 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
+        width: '100%',
+        maxWidth: Platform.select({
+          web: 850, 
+          android: '100%' 
+        }),
+        alignSelf: 'center',
     },
     userImage: {
         width: 46,
