@@ -14,7 +14,6 @@ export default function UserScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const [currentPollId, setPollId] = useState(-1);
     const [polls, setPolls] = useState<{ polls_active: any[], polls_inactive: any[] } | null>(null);
-    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const getUserFromStorage = async () => {
@@ -59,7 +58,6 @@ export default function UserScreen() {
                     setLoading(false);
                 } catch (error) {
                     console.error('Error fetching polls:', error);
-                    setError('Error fetching polls: ' + (error.message || 'Unknown error'));
                     setLoading(false);
                 }
             };
