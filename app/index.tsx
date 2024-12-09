@@ -145,10 +145,14 @@ export default function HomeScreen() {
         colors={['#C2066D', '#541388']}  
         style={styles.gradientBackground}>
         <View style={styles.textRow}>
-        <IdkLogo fontSize={120}></IdkLogo>
-      </View>
-        {/* Google Button */}
-        {Component}
+          <IdkLogo fontSize={120}></IdkLogo>
+        </View>
+        <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+          {/* Google Button */}
+          {Component}   
+        </View>
+
+      
       </LinearGradient>
     </SafeAreaView>
   );
@@ -157,6 +161,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    justifyContent: 'center',
   },
   gradientBackground: {
     flex: 1,
@@ -169,6 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',  
     padding: 30,
     marginTop: 170,
+    marginBottom: 0,
   },
   title: {
     fontFamily: 'LexendDeca',
@@ -199,26 +205,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  debugButton:{
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'black', 
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 30,
-    shadowColor: '#000',
-    marginTop: -35,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  debugButtonContainer: {
-    marginBottom: 300  
-  },
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 5
   },
   googleLogo: {
