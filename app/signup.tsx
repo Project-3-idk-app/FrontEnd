@@ -60,7 +60,7 @@ export default function SignUpScreen() {
               <Text style={[
                 styles.welcomeText,
                 isMobileWeb && styles.welcomeTextMobileWeb
-              ]}>Welcome to</Text>
+              ]}>Welcome to </Text>
               <IdkLogo 
                 fontSize={
                   Platform.select({
