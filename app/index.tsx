@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   },
   logoSection: {
     position: 'absolute',
-    top: '30%',
+    top: '25%',
     alignItems: 'center',
   },
   buttonSection: {
