@@ -138,21 +138,22 @@ export default function HomeScreen() {
   ),
   })();
 
-  return (
-    // Gradient Background and Logo 
+    return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
         colors={['#C2066D', '#541388']}  
         style={styles.gradientBackground}>
-        <View style={styles.textRow}>
-          <IdkLogo fontSize={120}></IdkLogo>
+        <View style={styles.contentContainer}>
+          {/* Logo Section */}
+          <View style={styles.logoSection}>
+            <IdkLogo fontSize={120} />
+          </View>
+          
+          {/* Button Section */}
+          <View style={styles.buttonSection}>
+            {Component}
+          </View>
         </View>
-        <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
-          {/* Google Button */}
-          {Component}   
-        </View>
-
-      
       </LinearGradient>
     </SafeAreaView>
   );
@@ -161,45 +162,34 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    justifyContent: 'center',
   },
   gradientBackground: {
     flex: 1,
-    justifyContent: 'space-between', 
-    alignItems: 'center',
-    padding: 16,
   },
-  textRow: {
-    flexDirection: 'row',  
-    alignItems: 'center',  
-    padding: 30,
-    marginTop: 170,
-    marginBottom: 0,
-  },
-  title: {
-    fontFamily: 'LexendDeca',
-    fontStyle: 'normal',
-    fontWeight: '400',
-    fontSize: 120,
-    color: '#FFFFFF',
-    textShadowColor: 'rgba(0, 0, 0, 0.25)',  
-    textShadowOffset: { width: 0, height: 4 }, 
-    textShadowRadius: 4, 
-  },
-  container: {
+  contentContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+  },
+  logoSection: {
+    position: 'absolute',
+    top: '30%',
+    alignItems: 'center',
+  },
+  buttonSection: {
+    position: 'absolute',
+    top: '50%',
+    alignItems: 'center',
   },
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'black', 
+    backgroundColor: 'black',
     paddingVertical: 12,
     paddingHorizontal: 50,
     borderRadius: 30,
     shadowColor: '#000',
-    marginTop: -70,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -209,16 +199,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 5
+    gap: 5,
   },
   googleLogo: {
-    width: 24, 
-    height: 24, 
-    marginRight: 10
+    width: 24,
+    height: 24,
+    marginRight: 10,
   },
   googleButtonText: {
     color: '#fff',
     fontFamily: 'LexendDeca',
     fontStyle: 'normal',
-  }
-})
+  },
+});
