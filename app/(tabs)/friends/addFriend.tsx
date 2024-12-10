@@ -199,40 +199,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingVertical: 10,
     },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 20,
-        marginTop: 20,
-        marginBottom: 10,
-        width: '70%',
-        alignSelf:'center',
-        gap: 10,
-      
-    },
-    inputWrapper: {
-        flex: 3,
-        maxWidth: '70%',
-
-    },
-    searchText: {
-        backgroundColor: '#665DB7',
-        borderRadius: 25,
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        fontSize: 16,
-        color: '#FFFFFF',
-        width: '100%',
-        fontFamily: 'LexendDeca',
-    },
-    searchButton: {
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        borderRadius: 25,
-        minWidth: 100,
-        flex:1 
-    },
     searchButtonText: {
         fontSize: 16,
         color: '#FFFFFF',
@@ -306,5 +272,36 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         fontFamily: 'LexendDeca',
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between', // Space out elements appropriately
+        paddingHorizontal: 20,
+        marginTop: 20,
+        marginBottom: 10,
+        width: '90%', // Use a larger percentage for smaller screens
+        alignSelf: 'center',
+        gap: 10,
+    },
+    inputWrapper: {
+        flex: 1, // Let it share space equally
+        marginRight: 10, // Add some spacing between the input and button
+    },
+    searchText: {
+        backgroundColor: '#665DB7',
+        borderRadius: 25,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        fontSize: 16,
+        color: '#FFFFFF',
+        width: '100%',
+        fontFamily: 'LexendDeca',
+    },
+    searchButton: {
+        paddingHorizontal: 20,
+        paddingVertical: 10, // Match padding to the TextInput
+        borderRadius: 25,
+        minWidth: 100,
     },
 });
