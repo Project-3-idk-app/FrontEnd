@@ -1,4 +1,4 @@
-import { Button, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Dimensions, Image, Modal, Platform, Pressable, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +7,8 @@ import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'expo-router';
 import { fakeConcluded, fakeCurrent, fakeuser } from '@/components/Types';
 import PollScroll from '@/components/Polls';
+
+const isMobileWeb = Platform.OS === 'web' && Dimensions.get('window').width < 600;
 
 export default function UserScreen() {
     const DEFAULT_PROFILE_IMAGE = require('@/assets/images/account_circle.png');
@@ -240,8 +242,8 @@ const styles = StyleSheet.create({
         height: Platform.OS === "web" ? 100 : 50,
     },
     setting: {
-        width: Platform.OS === "web" ? 50 : 25,
-        height: Platform.OS === "web" ? 50 : 25,
+        width: isMobileWeb ? 25 : 50,
+        height: isMobileWeb ? 25 : 50,
     },
     modalOverlay: {
         flex: 1,
