@@ -1,4 +1,4 @@
-import { Animated, StatusBar, StyleSheet, View, Text, TextInput, Pressable, TouchableOpacity, Image, FlatList, Alert, Modal, Platform, Button } from 'react-native';
+import { Animated, StatusBar, StyleSheet, View, Text, TextInput, Pressable, TouchableOpacity, Image, FlatList, Alert, Modal, Platform, Button, ScrollView } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react'
@@ -137,6 +137,7 @@ export default function AddFriend() {
                         </LinearGradient>
                     </TouchableOpacity>
                 </View>
+                <ScrollView>
                 <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
                     {hasResults ?
                         <FlatList
@@ -150,6 +151,7 @@ export default function AddFriend() {
                         </View>
                     }
                 </View>
+                </ScrollView>
                 {/* Modal */}
                 <Modal
                     transparent={true}
