@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Dimensions, StatusBar, StyleSheet, View, Text, ActivityIndicator,FlatList,} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Dimensions, StatusBar, StyleSheet, View, Text, ActivityIndicator,FlatList, TouchableOpacity,} from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IdkLogo from '@/components/Logo';
 import ActivePoll from '@/components/ActivePolls';
 import { fakeuser } from '@/components/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from 'expo-router';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function FeedScreen() {
+  const navigator = useNavigation();
+  const [isEndOfList, setIsEndOfList] = useState(false);
   const [user, setUser] = useState(fakeuser);
   const [polls, setPolls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -91,11 +94,26 @@ export default function FeedScreen() {
             decelerationRate="fast"
             viewabilityConfig={viewabilityConfig}
             contentContainerStyle={styles.pollList}
+            onEndReached={() => setIsEndOfList(true)}
+            onEndReachedThreshold={0.1}
             ListEmptyComponent={
               <Text style={styles.errorText}>No active polls available</Text>
             }
+            ListFooterComponent={
+              isEndOfList && polls.length > 0 ? (
+                <View style={styles.endOfListContainer}>
+                  <Text style={styles.endOfListText}>All Polls Seen</Text>
+                </View>
+              ) : null
+            }
           />  
         )}
+        <TouchableOpacity
+              style={styles.refreshButton}
+              onPress={() => navigator.replace('index')}
+              >
+              <Text style={styles.addButtonText}>Refresh</Text>
+          </TouchableOpacity>
       </SafeAreaView>
     </ThemedView>
   );
@@ -104,6 +122,16 @@ export default function FeedScreen() {
 const styles = StyleSheet.create({
   fullPage: {
     flex: 1,
+  },
+  endOfListContainer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  endOfListText: {
+    fontFamily: 'LexendDeca',
+    color: '#CB046B', 
+    fontSize: 17,
   },
   topTab: {
     backgroundColor: "#CB046B",
@@ -114,6 +142,21 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20,
     zIndex: 1,
+  },
+  refreshButton:{
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    fontFamily: 'LexendDeca',
+    paddingVertical: 8,
+    paddingHorizontal: 5,
+    borderRadius: 20,
+    paddingRight:20,
+    paddingLeft: 20,
+    marginTop: 15,
+    marginBottom: 10,
+    backgroundColor: '#0E7C7B',
+    marginRight: 20,
+    alignSelf: 'center',
   },
   pollContainer: {
     height: SCREEN_HEIGHT *0.8,
@@ -126,6 +169,11 @@ const styles = StyleSheet.create({
   loader: {
     marginTop: 32,
   },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontFamily: 'LexendDeca',
+    fontSize: 14,
+},
   errorText: {
     color: 'red',
     textAlign: 'center',
