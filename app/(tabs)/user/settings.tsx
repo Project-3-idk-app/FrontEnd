@@ -197,7 +197,6 @@ export default function UserScreen() {
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
                             <View style={{ flex: 3 }}>
                                 <Button title="Delete" onPress={onDelete} color={'red'} />
-                                <Button title="No" onPress={closeModal} color={'grey'} />
                             </View>
                             <View style={{flex: 1}}/>
                             <View style={{ flex: 3 }}>
