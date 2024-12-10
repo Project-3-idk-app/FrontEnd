@@ -73,7 +73,7 @@ export default function SignUpScreen() {
               <Text style={[
                 styles.welcomeText,
                 isMobileWeb && styles.welcomeTextMobileWeb
-              ]}>, {user.given_name}</Text>
+              ]}> {user.given_name}</Text>
             </View>
             
             <View style={styles.inputContainer}>
