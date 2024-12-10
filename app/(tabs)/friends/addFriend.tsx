@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
       
     },
     inputWrapper: {
-        flex: 1,
+        flex: 3,
         maxWidth: '70%',
 
     },
@@ -231,6 +231,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 25,
         minWidth: 100,
+        flex:1 
     },
     searchButtonText: {
         fontSize: 16,
